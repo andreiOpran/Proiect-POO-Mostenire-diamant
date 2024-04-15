@@ -1,0 +1,34 @@
+1. Minim 5 clase
+
+2. Incapsularea datelor in fiecare clasa
+
+3. Comentarii
+
+4. Fiecare clasa sa contina:
+	- constructorul fara parametri
+	- constructorul cu toti parametri
+	- copy constructor
+	- operatorul egal
+	- destructor
+	- operator citire
+	- operator afisare
+
+5. Sa se exemplifice conceptul de virtualizare
+
+6. Sa se exemplifice conceptul de mostenire pentru minim 3 clase alese
+
+7. Sa se exemplifice conceptul de polimorfism
+
+8. Proiectul trebuie sa contina minim o clasa abstracta/interfata (interfata nu se numara pentru mostenirea de 3 clase)
+
+9. Pentru Meniul interactiv sa se foloseasca operatorii necesari
+
+10. Fiecare clasa sa contina cel putin o functionalitate
+
+11. Sa se foloseasca cel putin o metoda constanta
+
+12. Sa existe cel putin o mostenire multipla
+
+13. Pentru nota 10 proiectul trebuie sa trateze problema mostenirii in diamant, altfel nota maxima este 8.
+
+14. Proiectul trebuie sa fie insotit de un meniu interactiv cu operatiile CRUD
