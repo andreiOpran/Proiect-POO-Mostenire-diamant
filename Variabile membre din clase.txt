@@ -1,0 +1,59 @@
+class IOInterfaceVehicul {
+
+public:
+	virtual ostream& afisareVehicul(ostream&) const = 0;
+	virtual istream& citireVehicul(istream&) = 0;
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class Vehicul : public IOInterfaceVehicul {
+
+protected:
+	string marca;
+	string model;
+	int anFabricatie;
+	bool disponibil;
+	double pret;
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class VehiculCarburant : virtual public Vehicul {
+
+protected:
+	string tipCarburant;
+	double consum;
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class VehiculElectric : virtual public Vehicul {
+
+protected:
+	double autonomieKm;
+	double timpIncarcare; // pana la 100%
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class VehiculHibrid : public VehiculCarburant, public VehiculElectric {
+
+protected:
+	char tipHibrid; // M - Mild Hybrid, F - Full Hybrid, P - Plug-in Hybrid
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class Client {
+	string nume;
+	vector<Vehicul*> vehiculeCumparate;
+	/*
+	double plataRamasa;
+	double creditMaxim;
+	*/
+};
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class Showroom {
+	string adresa;
+	vector<Vehicul*> vehiculeDisponibile;
+};
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
