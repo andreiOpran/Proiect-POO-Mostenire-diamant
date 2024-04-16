@@ -261,20 +261,83 @@ ostream& operator <<(ostream& out, const VehiculElectric& obj) { return obj.afis
 class VehiculHibrid : public VehiculCarburant, public VehiculElectric {
 
 protected:
-	string tipCarburant;
-	double autonomieKmElectrica;
+	char tipHibrid; // M - Mild Hybrid, F - Full Hybrid, P - Plug-in Hybrid
 
 public:
 
-	VehiculHibrid()
-	{
-		cout << endl << "Constructor VehiculHibrid" << endl;
-	}
-	~VehiculHibrid()
-	{
-		cout << endl << "Destructor VehiculHibrid" << endl;
-	}
+	// CONSTRUCTOR FARA PARAMETRI
+	VehiculHibrid();
+
+	// CONSTRUCTOR CU PARAMETRI
+	VehiculHibrid(string, string, int, bool, double, string, double, double, double, char);
+
+	// COPY CONSTRUCTOR
+	VehiculHibrid(const VehiculHibrid&);
+
+	// OPERATOR =
+	VehiculHibrid& operator=(const VehiculHibrid&);
+
+	// DESTRUCTOR
+	~VehiculHibrid() {}
+
+	// OPERATORII >> SI <<
+	friend istream& operator >>(istream&, VehiculHibrid&);
+	friend ostream& operator <<(ostream&, const VehiculHibrid&); // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
+	istream& citireVehicul(istream& in) override;
+	ostream& afisareVehicul(ostream& out) const override;
 };
+
+// CONSTRUCTOR FARA PARAMETRI
+VehiculHibrid::VehiculHibrid() : VehiculCarburant(), VehiculElectric(), tipHibrid('0') {}
+
+// CONSTRUCTOR CU PARAMETRI
+VehiculHibrid::VehiculHibrid(string marca, string model, int anFabricatie, bool disponibil, double pret, string tipCarburant, double consum, double autonomieKm, double timpIncarcare, char tipHibrid) : VehiculCarburant(marca, model, anFabricatie, disponibil, pret, tipCarburant, consum), VehiculElectric(marca, model, anFabricatie, disponibil, pret, autonomieKm, timpIncarcare), tipHibrid(tipHibrid) {}
+
+//  COPY CONSTRUCTOR
+VehiculHibrid::VehiculHibrid(const VehiculHibrid& obj) : VehiculCarburant(obj), VehiculElectric(obj), tipHibrid(obj.tipHibrid) {}
+
+// OPERATOR =
+VehiculHibrid& VehiculHibrid::operator=(const VehiculHibrid& obj)
+{
+	if (this != &obj)
+	{
+		VehiculCarburant::operator=(obj);
+		VehiculElectric::operator=(obj);
+		this->tipHibrid = obj.tipHibrid;
+	}
+	return *this;
+}
+
+// OPERATORII >> SI <<
+istream& VehiculHibrid::citireVehicul(istream& in)
+{
+	VehiculCarburant::citireVehicul(in);
+
+	/*VehiculElectric::citireVehicul(in);*/ // altfel se citeste de 2 ori
+	cout << "Autonomie in KM: ";
+	in >> autonomieKm;
+	cout << "Timp incarcare: ";
+	in >> timpIncarcare;
+
+	cout << "Tip hibrid: ";
+	in >> tipHibrid;
+	return in;
+}
+istream& operator >>(istream& in, VehiculHibrid& obj) { return obj.citireVehicul(in); }
+ostream& VehiculHibrid::afisareVehicul(ostream& out) const
+{
+    VehiculCarburant::afisareVehicul(out);
+    
+	/*VehiculElectric::afisareVehicul(out);*/ // altfel se citeste de 2 ori
+	out << "Autonomie in KM: " << autonomieKm << endl;
+	out << "Timp incarcare: " << timpIncarcare << endl;
+
+    out << "Tip hibrid: " << tipHibrid << endl;
+    return out;
+}
+ostream& operator <<(ostream& out, const VehiculHibrid& obj) { return obj.afisareVehicul(out); }
+
+
 
 
 // --------- CLASA CLIENT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -298,7 +361,7 @@ class Showroom {
 
 int main()
 {
-	Vehicul v1;
+	VehiculHibrid v1;
 	cin >> v1;
 	cout << v1;
 	return 0;
