@@ -3,10 +3,10 @@
 #include <vector>
 using namespace std;
 
-class IOInterface {
+class IOInterfaceVehicul {
 public:
-	virtual ostream& citireVehicul(ostream&) = 0;
-	virtual istream& afisareVehicul(istream&) const = 0;
+	virtual ostream& afisareVehicul(ostream&) const = 0;
+	virtual istream& citireVehicul(istream&) = 0;
 };
 
 //class InterfataVehicul {
@@ -15,7 +15,7 @@ public:
 //
 //};
 
-class Vehicul : public IOInterface {
+class Vehicul : public IOInterfaceVehicul {
 
 protected:
 	string marca;
@@ -41,10 +41,9 @@ public:
 	// DESTRUCTOR
 	~Vehicul() {}
 
-	// OPERATORI >> SI <<
+	// OPERATORIi >> SI <<
 	friend istream& operator >>(istream&, Vehicul&);
 	friend ostream& operator <<(ostream&, const Vehicul&);
-
 	virtual istream& citireVehicul(istream& in) override;
 	virtual ostream& afisareVehicul(ostream& out) const override; // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
 };
@@ -72,7 +71,7 @@ Vehicul& Vehicul::operator=(const Vehicul& obj)
 	return *this;
 }
 
-// OPERATOR >>
+// OPERATORIi >> SI <<
 istream& Vehicul::citireVehicul(istream& in)
 {
 	cout << "Marca: ";
@@ -87,10 +86,7 @@ istream& Vehicul::citireVehicul(istream& in)
 	in >> pret;
 	return in;
 }
-
 istream& operator >>(istream& in, Vehicul& obj) { return obj.citireVehicul(in); }
-
-// OPERATOR <<
 ostream& Vehicul::afisareVehicul(ostream& out) const
 {
 	out << "Marca: " << marca << endl;
@@ -100,7 +96,6 @@ ostream& Vehicul::afisareVehicul(ostream& out) const
 	out << "Pret: " << pret << endl;
 	return out;
 }
-
 ostream& operator <<(ostream& out, const Vehicul& obj) { return obj.afisareVehicul(out); }
 	
 
