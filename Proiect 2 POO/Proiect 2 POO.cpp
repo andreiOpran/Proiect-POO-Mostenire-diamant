@@ -140,7 +140,7 @@ public:
 };
 
 // CONSTRUCTOR FARA PARAMETRI
-VehiculCarburant::VehiculCarburant() : tipCarburant("Necunoscut"), consum(0) {}
+VehiculCarburant::VehiculCarburant() : Vehicul(), tipCarburant("Necunoscut"), consum(0) {}
 
 // CONSTRUCTOR CU PARAMETRI
 VehiculCarburant::VehiculCarburant(string marca, string model, int anFabricatie, bool disponibil, double pret, string tipCarburant, double consum) : Vehicul(marca, model, anFabricatie, disponibil, pret), tipCarburant(tipCarburant), consum(consum) {}
@@ -186,20 +186,74 @@ ostream& operator <<(ostream& out, const VehiculCarburant& obj) { return obj.afi
 class VehiculElectric : virtual public Vehicul {
 
 protected:
-	double autonomie;
+	double autonomieKm;
 	double timpIncarcare; // pana la 100%
 
 public:
 
-	VehiculElectric()
-	{
-		cout << endl << "Constructor VehiculElectric" << endl;
-	}
-	~VehiculElectric()
-	{
-		cout << endl << "Destructor VehiculElectric" << endl;
-	}
+	// CONSTRUCTOR FARA PARAMETRI
+	VehiculElectric();
+
+	// CONSTRUCTOR CU PARAMETRI
+	VehiculElectric(string, string, int, bool, double, double, double);
+
+	// COPY CONSTRUCTOR
+	VehiculElectric(const VehiculElectric&);
+
+	// OPERATOR =
+	VehiculElectric& operator=(const VehiculElectric&);
+
+	// DESTRUCTOR
+	~VehiculElectric() {}
+
+	// OPERATORII >> SI <<
+	friend istream& operator >>(istream&, VehiculElectric&);
+	friend ostream& operator <<(ostream&, const VehiculElectric&); // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
+	istream& citireVehicul(istream& in) override;
+	ostream& afisareVehicul(ostream& out) const override;
 };
+
+// CONSTRUCTOR FARA PARAMETRI
+VehiculElectric::VehiculElectric() : Vehicul(), autonomieKm(0), timpIncarcare(0) {}
+
+// CONSTRUCTOR CU PARAMETRI
+VehiculElectric::VehiculElectric(string marca, string model, int anFabricatie, bool disponibil, double pret, double autonomieKm, double timpIncarcare) : Vehicul(marca, model, anFabricatie, disponibil, pret), autonomieKm(autonomieKm), timpIncarcare(timpIncarcare) {}
+
+// COPY CONSTRUCTOR
+VehiculElectric::VehiculElectric(const VehiculElectric& obj) : Vehicul(obj), autonomieKm(obj.autonomieKm), timpIncarcare(obj.timpIncarcare) {}
+
+// OPERATOR =
+VehiculElectric& VehiculElectric::operator=(const VehiculElectric& obj)
+{
+	if (this != &obj)
+	{
+		Vehicul::operator=(obj); // varianta mai buna decat sa copiezi fiecare atribut din clasa de baza
+		this->autonomieKm = obj.autonomieKm;
+		this->timpIncarcare = obj.timpIncarcare;
+	}
+	return *this;
+}
+
+// OPERATORII >> SI <<
+istream& VehiculElectric::citireVehicul(istream& in)
+{
+	Vehicul::citireVehicul(in);
+	cout << "Autonomie in KM: ";
+	in >> autonomieKm;
+	cout << "Timp incarcare: ";
+	in >> timpIncarcare;
+	return in;
+}
+istream& operator >>(istream& in, VehiculElectric& obj) { return obj.citireVehicul(in); }
+ostream& VehiculElectric::afisareVehicul(ostream& out) const
+{
+	Vehicul::afisareVehicul(out);
+	out << "Autonomie in KM: " << autonomieKm << endl;
+	out << "Timp incarcare: " << timpIncarcare << endl;
+	return out;
+}
+ostream& operator <<(ostream& out, const VehiculElectric& obj) { return obj.afisareVehicul(out); }
+
 
 
 // --------- CLASA VEHICULHIBRID ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -208,7 +262,7 @@ class VehiculHibrid : public VehiculCarburant, public VehiculElectric {
 
 protected:
 	string tipCarburant;
-	double autonomieElectrica;
+	double autonomieKmElectrica;
 
 public:
 
