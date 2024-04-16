@@ -3,17 +3,25 @@
 #include <vector>
 using namespace std;
 
-class IOInterfaceVehicul {
-public:
-	virtual ostream& afisareVehicul(ostream&) const = 0;
-	virtual istream& citireVehicul(istream&) = 0;
-};
 
 //class InterfataVehicul {
 //
 //public:
 //
 //};
+
+
+// --------- CLASA IOINTERFACEVEHICUL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class IOInterfaceVehicul {
+
+public:
+	virtual ostream& afisareVehicul(ostream&) const = 0;
+	virtual istream& citireVehicul(istream&) = 0;
+};
+
+
+// --------- CLASA VEHICUL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Vehicul : public IOInterfaceVehicul {
 
@@ -44,8 +52,8 @@ public:
 	// OPERATORIi >> SI <<
 	friend istream& operator >>(istream&, Vehicul&);
 	friend ostream& operator <<(ostream&, const Vehicul&);
-	virtual istream& citireVehicul(istream& in) override;
-	virtual ostream& afisareVehicul(ostream& out) const override; // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
+	istream& citireVehicul(istream& in) override;
+	ostream& afisareVehicul(ostream& out) const override; // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -99,7 +107,7 @@ ostream& Vehicul::afisareVehicul(ostream& out) const
 ostream& operator <<(ostream& out, const Vehicul& obj) { return obj.afisareVehicul(out); }
 	
 
-
+// --------- CLASA VEHICULCARBURANT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class VehiculCarburant : virtual public Vehicul {
 
@@ -109,15 +117,71 @@ protected:
 
 public:
 
-	VehiculCarburant()
-	{
-		cout << endl << "Constructor VehiculCarburant" << endl;
-	}
-	~VehiculCarburant()
-	{
-		cout << endl << "Destructor VehiculCarburant" << endl;
-	}
+	// CONSTRUCTOR FARA PARAMETRI
+	VehiculCarburant();
+
+	// CONSTRUCTOR CU PARAMETRI
+	VehiculCarburant(string, string , int, bool, double, string, double);
+
+	// COPY CONSTRUCTOR
+	VehiculCarburant(const VehiculCarburant&);
+
+	// OPERATOR =
+	VehiculCarburant& operator=(const VehiculCarburant&);
+
+	// DESTRUCTOR
+	~VehiculCarburant() {}
+
+	// OPERATORII >> SI <<
+	friend istream& operator >>(istream&, VehiculCarburant&);
+	friend ostream& operator <<(ostream&, const VehiculCarburant&); // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
+	istream& citireVehicul(istream& in) override;
+	ostream& afisareVehicul(ostream& out) const override;
 };
+
+// CONSTRUCTOR FARA PARAMETRI
+VehiculCarburant::VehiculCarburant() : tipCarburant("Necunoscut"), consum(0) {}
+
+// CONSTRUCTOR CU PARAMETRI
+VehiculCarburant::VehiculCarburant(string marca, string model, int anFabricatie, bool disponibil, double pret, string tipCarburant, double consum) : Vehicul(marca, model, anFabricatie, disponibil, pret), tipCarburant(tipCarburant), consum(consum) {}
+
+// COPY CONSTRUCTOR
+VehiculCarburant::VehiculCarburant(const VehiculCarburant& obj) : Vehicul(obj), tipCarburant(obj.tipCarburant), consum(obj.consum) {}
+
+// OPERATOR =
+VehiculCarburant& VehiculCarburant::operator=(const VehiculCarburant& obj)
+{
+	if (this != &obj)
+	{
+		Vehicul::operator=(obj); // varianta mai buna decat sa copiezi fiecare atribut din clasa de baza
+		this->tipCarburant = obj.tipCarburant;
+		this->consum = obj.consum;
+	}
+	return *this;
+}
+
+// OPERATORII >> SI <<
+istream& VehiculCarburant::citireVehicul(istream& in)
+{
+	Vehicul::citireVehicul(in);
+	cout << "Tip carburant: ";
+	in >> tipCarburant;
+	cout << "Consum: ";
+	in >> consum;
+	return in;
+}
+istream& operator >>(istream& in, VehiculCarburant& obj) { return obj.citireVehicul(in); }
+ostream& VehiculCarburant::afisareVehicul(ostream& out) const
+{
+	Vehicul::afisareVehicul(out);
+	out << "Tip carburant: " << tipCarburant << endl;
+	out << "Consum: " << consum << endl;
+	return out;
+}
+ostream& operator <<(ostream& out, const VehiculCarburant& obj) { return obj.afisareVehicul(out); }
+
+
+// --------- CLASA VEHICULELECTRIC ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class VehiculElectric : virtual public Vehicul {
 
@@ -137,6 +201,9 @@ public:
 	}
 };
 
+
+// --------- CLASA VEHICULHIBRID ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 class VehiculHibrid : public VehiculCarburant, public VehiculElectric {
 
 protected:
@@ -155,6 +222,9 @@ public:
 	}
 };
 
+
+// --------- CLASA CLIENT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 class Client {
 	string nume;
 	vector<Vehicul*> vehiculeCumparate;
@@ -163,6 +233,9 @@ class Client {
 	double creditMaxim;
 	*/
 };
+
+
+// --------- CLASA SHOWROOM ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Showroom {
 	string adresa;
