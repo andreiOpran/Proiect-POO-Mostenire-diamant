@@ -1,14 +1,15 @@
 #include <iostream>
+#include <string>
 #include <cstring>
 #include <vector>
 using namespace std;
 
 
-//class InterfataVehicul {
-//
-//public:
-//
-//};
+class InterfataVehicul {
+
+public:
+	
+};
 
 
 // --------- CLASA IOINTERFACEVEHICUL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -23,7 +24,7 @@ public:
 
 // --------- CLASA VEHICUL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class Vehicul : public IOInterfaceVehicul {
+class Vehicul : public IOInterfaceVehicul, public InterfataVehicul{
 
 protected:
 	string marca;
@@ -47,13 +48,19 @@ public:
 	Vehicul& operator=(const Vehicul&);
 
 	// DESTRUCTOR
-	~Vehicul() {}
+	virtual ~Vehicul() {}
 
 	// OPERATORIi >> SI <<
 	friend istream& operator >>(istream&, Vehicul&);
 	friend ostream& operator <<(ostream&, const Vehicul&);
-	istream& citireVehicul(istream& in) override;
-	ostream& afisareVehicul(ostream& out) const override; // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
+	istream& citireVehicul(istream& in) override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
+	ostream& afisareVehicul(ostream& out) const override; // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out) // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
+
+	// SETTER DISPONIBIL
+	void setDisponibil(bool);
+
+	// GETTER DISPONIBIL
+	bool getDisponibil();
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -106,6 +113,12 @@ ostream& Vehicul::afisareVehicul(ostream& out) const
 }
 ostream& operator <<(ostream& out, const Vehicul& obj) { return obj.afisareVehicul(out); }
 	
+// SETTER DISPONIBIL
+void Vehicul::setDisponibil(bool disponibil) { this->disponibil = disponibil; }
+
+// GETTER DISPONIBIL
+bool Vehicul::getDisponibil() { return disponibil; }
+
 
 // --------- CLASA VEHICULCARBURANT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -130,13 +143,13 @@ public:
 	VehiculCarburant& operator=(const VehiculCarburant&);
 
 	// DESTRUCTOR
-	~VehiculCarburant() {}
+	virtual ~VehiculCarburant() {}
 
 	// OPERATORII >> SI <<
 	friend istream& operator >>(istream&, VehiculCarburant&);
 	friend ostream& operator <<(ostream&, const VehiculCarburant&); // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
-	istream& citireVehicul(istream& in) override;
-	ostream& afisareVehicul(ostream& out) const override;
+	istream& citireVehicul(istream& in) override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
+	ostream& afisareVehicul(ostream& out) const override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -204,13 +217,13 @@ public:
 	VehiculElectric& operator=(const VehiculElectric&);
 
 	// DESTRUCTOR
-	~VehiculElectric() {}
+	virtual ~VehiculElectric() {}
 
 	// OPERATORII >> SI <<
 	friend istream& operator >>(istream&, VehiculElectric&);
 	friend ostream& operator <<(ostream&, const VehiculElectric&); // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
-	istream& citireVehicul(istream& in) override;
-	ostream& afisareVehicul(ostream& out) const override;
+	istream& citireVehicul(istream& in) override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
+	ostream& afisareVehicul(ostream& out) const override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -319,7 +332,7 @@ istream& VehiculHibrid::citireVehicul(istream& in)
 	cout << "Timp incarcare: ";
 	in >> timpIncarcare;
 
-	cout << "Tip hibrid: ";
+	cout << "Introduceti una dintre cele 3 litere pentru tipul de hibrid (M - Mild Hybrid, F - Full Hybrid, P - Plug-in Hybrid): ";
 	in >> tipHibrid;
 	return in;
 }
@@ -344,25 +357,282 @@ ostream& operator <<(ostream& out, const VehiculHibrid& obj) { return obj.afisar
 
 class Client {
 	string nume;
+	int nrVehiculeCumparate;
 	vector<Vehicul*> vehiculeCumparate;
-	/*
 	double plataRamasa;
 	double creditMaxim;
-	*/
+
+public:
+	
+	// CONSTRUCTOR FARA PARAMETRI
+	Client();
+
+	// CONSTRUCTOR CU PARAMETRI
+	Client(string, int, vector<Vehicul*>, double, double);
+
+	// COPY CONSTRUCTOR
+	Client(const Client&);
+
+	// OPERATOR =
+	Client& operator=(const Client&);
+
+	// DESTRUCTOR
+	~Client();
+
+	// OPERATORII >> SI <<
+	friend istream& operator >>(istream&, Client&);
+	friend ostream& operator <<(ostream&, const Client&);
+
 };
 
+// CONSTRUCTOR FARA PARAMETRI
+Client::Client() : nume("Anonim"), nrVehiculeCumparate(0), vehiculeCumparate(), plataRamasa(0), creditMaxim(0) {}
+
+// CONSTRUCTOR CU PARAMETRI
+Client::Client(string nume, int nrVehiculeCumparate, vector<Vehicul*> vehiculeCumparate, double plataRamasa, double creditMaxim) : nume(nume), nrVehiculeCumparate(nrVehiculeCumparate), vehiculeCumparate(vehiculeCumparate), plataRamasa(plataRamasa), creditMaxim(creditMaxim) {}
+
+// COPY CONSTRUCTOR
+Client::Client(const Client& obj) : nume(obj.nume), nrVehiculeCumparate(obj.nrVehiculeCumparate), vehiculeCumparate(obj.vehiculeCumparate), plataRamasa(obj.plataRamasa), creditMaxim(obj.creditMaxim) {}
+
+// OPERATOR =
+Client& Client::operator=(const Client& obj)
+{
+	if (this != &obj)
+	{
+		this->nume = obj.nume;
+		this->nrVehiculeCumparate = obj.nrVehiculeCumparate;
+		this->vehiculeCumparate = obj.vehiculeCumparate;
+		this->plataRamasa = obj.plataRamasa;
+		this->creditMaxim = obj.creditMaxim;
+	}
+	return *this;
+}
+
+// DESTRUCTOR
+Client::~Client()
+{
+	for (int i = 0; i < nrVehiculeCumparate; i++)
+	{
+		delete vehiculeCumparate[i];
+	}
+}
+
+// OPERATORII >> SI <<
+istream& operator >>(istream& in, Client& obj)
+{
+	cout << "Nume: ";
+    getline(in, obj.nume);
+	cout << "Numar vehicule cumparate: ";
+	in >> obj.nrVehiculeCumparate;
+	for (int i = 0; i < obj.nrVehiculeCumparate; i++)
+	{
+		char tipMotor;
+		cout << "\nCe tip de motor are vehiculul " << i + 1 <<"?\nIntroduceti litera corespunzatoare: C - Carburant, E - Electric, H - Hibrid." << endl << "> ";
+		in >> tipMotor;
+		cout << endl;
+		if (tipMotor == 'C')
+		{
+			VehiculCarburant* v = new VehiculCarburant();
+			in >> *v;
+			if (v->getDisponibil() == true)
+			{
+				cout << "\nAti setat disponibilitatea vehiculului " << i + 1 << " la TRUE, dar vehiculul este deja vandut. Acesta va fi memorat ca indisponibil in mod implicit.\n";
+				v->setDisponibil(false);
+			}
+			obj.vehiculeCumparate.push_back(v);
+		}
+		else if (tipMotor == 'E')
+		{
+			VehiculElectric* v = new VehiculElectric();
+			in >> *v;
+			if (v->getDisponibil() == true)
+			{
+				cout << "\nAti setat disponibilitatea vehiculului " << i + 1 << " la TRUE, dar vehiculul este deja vandut. Acesta va fi memorat ca indisponibil in mod implicit.\n";
+				v->setDisponibil(false);
+			}
+			obj.vehiculeCumparate.push_back(v);
+		}
+		else if (tipMotor == 'H')
+		{
+			VehiculHibrid* v = new VehiculHibrid();
+			in >> *v;
+			if (v->getDisponibil() == true)
+			{
+				cout << "\nAti setat disponibilitatea vehiculului " << i + 1 << " la TRUE, dar vehiculul este deja vandut. Acesta va fi memorat ca indisponibil in mod implicit.\n";
+				v->setDisponibil(false);
+			}
+			obj.vehiculeCumparate.push_back(v);
+		}
+		else
+		{
+			cout << "Introduceti una dintre literele C, E sau H." << endl;
+			i--;
+		}
+	}
+	cout << "\nPlata ramasa: ";
+	in >> obj.plataRamasa;
+	cout << "Credit maxim: ";
+	in >> obj.creditMaxim;
+	return in;
+}
+ostream& operator <<(ostream& out, const Client& obj)
+{
+	out << "\nNume: " << obj.nume << endl;
+	cout << endl;
+	out << "Vehicule cumparate:\n" << endl;
+	for (int i = 0; i < obj.nrVehiculeCumparate; i++)
+	{
+		out << "Vehiculul " << i + 1 << ":" << endl;
+		out << *obj.vehiculeCumparate[i] << endl;
+	}
+	out << "\nPlata ramasa: " << obj.plataRamasa << endl;
+	out << "Credit maxim: " << obj.creditMaxim << endl;
+	return out;
+}
 
 // --------- CLASA SHOWROOM ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Showroom {
+	string numeShowroom;
 	string adresa;
+	int nrVehiculeDisponibile;
 	vector<Vehicul*> vehiculeDisponibile;
+public:
+	// CONSTRUCTOR FARA PARAMETRI
+	Showroom();
+
+	// CONSTRUCTOR CU PARAMETRI
+	Showroom(string, string, int, vector<Vehicul*>);
+
+	// COPY CONSTRUCTOR
+	Showroom(const Showroom&);
+
+	// OPERATOR =
+	Showroom& operator=(const Showroom&);
+
+	// DESTRUCTOR
+	~Showroom();
+
+	// OPERATORII >> SI <<
+	friend istream& operator >>(istream&, Showroom&);
+	friend ostream& operator <<(ostream&, const Showroom&);
 };
+
+// CONSTRUCTOR FARA PARAMETRI
+Showroom::Showroom() : numeShowroom("Nedefinit"), adresa("Nedefinita"), nrVehiculeDisponibile(0), vehiculeDisponibile() {}
+
+// CONSTRUCTOR CU PARAMETRI
+Showroom::Showroom(string numeShowroom, string adresa, int nrVehiculeDisponibile, vector<Vehicul*> vehiculeDisponibile) : numeShowroom(numeShowroom), adresa(adresa), nrVehiculeDisponibile(nrVehiculeDisponibile), vehiculeDisponibile(vehiculeDisponibile) {}
+
+// COPY CONSTRUCTOR
+Showroom::Showroom(const Showroom& obj) : numeShowroom(obj.numeShowroom), adresa(obj.adresa), nrVehiculeDisponibile(obj.nrVehiculeDisponibile), vehiculeDisponibile(obj.vehiculeDisponibile) {}
+
+// OPERATOR =
+Showroom& Showroom::operator=(const Showroom& obj)
+{
+	if (this != &obj)
+	{
+		this->numeShowroom = obj.numeShowroom;
+		this->adresa = obj.adresa;
+		this->nrVehiculeDisponibile = obj.nrVehiculeDisponibile;
+		this->vehiculeDisponibile = obj.vehiculeDisponibile;
+	}
+	return *this;
+}
+
+// DESTRUCTOR
+Showroom::~Showroom()
+{
+	for (int i = 0; i < nrVehiculeDisponibile; i++)
+	{
+		delete vehiculeDisponibile[i];
+	}
+}
+
+// OPERATORII >> SI <<
+istream& operator >>(istream& in, Showroom& obj)
+{
+	cout << "Nume showroom: ";
+	getline(in, obj.numeShowroom);
+	cout << "Adresa showroom: ";
+	getline(in, obj.adresa);
+	cout << "Numar vehicule disponibile: ";
+	in >> obj.nrVehiculeDisponibile;
+	for (int i = 0; i < obj.nrVehiculeDisponibile; i++)
+	{
+		char tipMotor;
+		cout << "\nCe tip de motor are vehiculul " << i + 1 << "?\nIntroduceti litera corespunzatoare: C - Carburant, E - Electric, H - Hibrid." << endl << "> ";
+		in >> tipMotor;
+		cout << endl;
+		if (tipMotor == 'C')
+		{
+			VehiculCarburant* v = new VehiculCarburant();
+			in >> *v;
+			obj.vehiculeDisponibile.push_back(v);
+		}
+		else if (tipMotor == 'E')
+		{
+			VehiculElectric* v = new VehiculElectric();
+			in >> *v;
+			obj.vehiculeDisponibile.push_back(v);
+		}
+		else if (tipMotor == 'H')
+		{
+			VehiculHibrid* v = new VehiculHibrid();
+			in >> *v;
+			obj.vehiculeDisponibile.push_back(v);
+		}
+		else
+		{
+			cout << "Introduceti una dintre literele C, E sau H." << endl;
+			i--;
+		}
+	}
+	return in;
+}
+ostream& operator <<(ostream& out, const Showroom& obj)
+{
+	out << "\nNume showroom: " << obj.numeShowroom << endl;
+	out << "Adresa showroom: " << obj.adresa << endl;
+	cout << endl;
+	out << "Vehicule disponibile:\n" << endl;
+	for (int i = 0; i < obj.nrVehiculeDisponibile; i++)
+	{
+		out << "Vehiculul " << i + 1 << ":" << endl;
+		out << *obj.vehiculeDisponibile[i] << endl;
+	}
+	return out;
+}
 
 int main()
 {
-	VehiculHibrid v1;
-	cin >> v1;
-	cout << v1;
+	Vehicul v1;
+	/*cin >> v1;*/
+	/*cout << v1 << endl;*/
+
+	//VehiculCarburant v2;
+	///*cin >> v2;*/
+	//cout << v2 << endl;
+
+	//VehiculElectric v3;
+	///*cin >> v3;*/
+	//cout << v3 << endl;
+
+	//VehiculHibrid v4;
+	///*cin >> v4;*/
+	//cout << v4 << endl;
+
+	/*Vehicul* p = new VehiculHibrid();
+	p->afisareVehicul(cout);*/
+
+	/*Client c1;
+	cin >> c1;
+	cout << c1;*/
+
+	Showroom s1;
+	cin >> s1;
+	cout << s1;
+
+
 	return 0;
 }
