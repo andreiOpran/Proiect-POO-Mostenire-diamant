@@ -8,7 +8,8 @@ using namespace std;
 class InterfataVehicul {
 
 public:
-	
+	virtual double valoareaRealaVehicul() const = 0;
+	virtual double costFolosireSiIntretinere() const = 0; // calcul pentru 1 an, presupunem ca intretinerea este 0.03 * valoarea reala a vehiculului
 };
 
 
@@ -48,7 +49,7 @@ public:
 	Vehicul& operator=(const Vehicul&);
 
 	// DESTRUCTOR
-	virtual ~Vehicul() {}
+	virtual ~Vehicul() {} // cand distrug un new VehiculDerivat() sa se distruga complet
 
 	// OPERATORIi >> SI <<
 	friend istream& operator >>(istream&, Vehicul&);
@@ -60,7 +61,13 @@ public:
 	void setDisponibil(bool);
 
 	// GETTER DISPONIBIL
-	bool getDisponibil();
+	bool getDisponibil() const;
+
+	// FUNCTIE VALOAREA REALA VEHICUL
+	double valoareaRealaVehicul() const override;
+
+	// FUNCTIE COST FOLOSIRE SI INTRETINERE
+	double costFolosireSiIntretinere() const override;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -117,7 +124,20 @@ ostream& operator <<(ostream& out, const Vehicul& obj) { return obj.afisareVehic
 void Vehicul::setDisponibil(bool disponibil) { this->disponibil = disponibil; }
 
 // GETTER DISPONIBIL
-bool Vehicul::getDisponibil() { return disponibil; }
+bool Vehicul::getDisponibil() const{ return disponibil; }
+
+// FUNCTIE VALOAREA REALA VEHICUL
+double Vehicul::valoareaRealaVehicul() const
+{
+	int vechime = 2024 - anFabricatie;
+	// double indiceVechime = pow(0.90, vechime); // in fiecare an scade cu 10%, si ramane in (0,1)
+	double indiceVechime = 1 - (0.1 * vechime);
+	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
+	return pret * indiceVechime * indiceMarca;
+}
+
+// FUNCTIE COST FOLOSIRE SI INTRETINERE
+double Vehicul::costFolosireSiIntretinere() const { return 0.03 * valoareaRealaVehicul(); }
 
 
 // --------- CLASA VEHICULCARBURANT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -126,7 +146,7 @@ class VehiculCarburant : virtual public Vehicul {
 
 protected:
 	string tipCarburant;
-	double consum;
+	double consum; // litri/100km
 
 public:
 
@@ -150,6 +170,12 @@ public:
 	friend ostream& operator <<(ostream&, const VehiculCarburant&); // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
 	istream& citireVehicul(istream& in) override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
 	ostream& afisareVehicul(ostream& out) const override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
+
+	// FUNCTIE VALOAREA REALA VEHICUL
+	double valoareaRealaVehicul() const override;
+
+	// FUNCTIE COST FOLOSIRE SI INTRETINERE
+	double costFolosireSiIntretinere() const override;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -193,6 +219,33 @@ ostream& VehiculCarburant::afisareVehicul(ostream& out) const
 }
 ostream& operator <<(ostream& out, const VehiculCarburant& obj) { return obj.afisareVehicul(out); }
 
+// FUNCTIE VALOAREA REALA VEHICUL
+double VehiculCarburant::valoareaRealaVehicul() const
+{
+	int vechime = 2024 - anFabricatie;
+	// double indiceVechime = pow(0.90, vechime); // in fiecare an scade cu 10%, si ramane in (0,1)
+	double indiceVechime = 1 - (0.1 * vechime);
+	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
+	double indiceConsum = consum < 5 ? 1.1 : 1.0;
+	return pret * indiceVechime * indiceMarca * indiceConsum;
+}
+
+// FUNCTIE COST FOLOSIRE SI INTRETINERE
+double VehiculCarburant::costFolosireSiIntretinere() const
+{
+    double cost = 0.03 * valoareaRealaVehicul(); // intretinerea pe an
+    double costCarburant = 0; // voi calcula conmform https://www.capital.ro/preturile-la-pompa-9-aprilie-benzina-motorina-pretul-petrolului.html#:~:text=Conform%20Peco%20Online%2C%20un%20litru%20de%20benzin%C4%83%20standard,premium%20cost%C4%83%20%C3%AEntre%207%2C83%20lei%20%C8%99i%208%2C01%20lei.
+	if (tipCarburant == "Benzina")
+		costCarburant = 7.24; 
+	else
+		if (tipCarburant == "Motorina")
+			costCarburant = 7.47; 
+    else
+        costCarburant = 0;
+	// presupunem ca se fac 20000 km/an
+	cost += (20000 / 100) * consum * costCarburant;
+    return cost;
+}
 
 // --------- CLASA VEHICULELECTRIC ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -200,7 +253,7 @@ class VehiculElectric : virtual public Vehicul {
 
 protected:
 	double autonomieKm;
-	double timpIncarcare; // pana la 100%
+	double timpIncarcare; // pana la 100%, in ore
 
 public:
 
@@ -224,6 +277,12 @@ public:
 	friend ostream& operator <<(ostream&, const VehiculElectric&); // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
 	istream& citireVehicul(istream& in) override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
 	ostream& afisareVehicul(ostream& out) const override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
+
+	// FUNCTIE VALOAREA REALA VEHICUL
+	double valoareaRealaVehicul() const override;
+
+	// FUNCTIE COST FOLOSIRE SI INTRETINERE
+	double costFolosireSiIntretinere() const override;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -267,6 +326,27 @@ ostream& VehiculElectric::afisareVehicul(ostream& out) const
 }
 ostream& operator <<(ostream& out, const VehiculElectric& obj) { return obj.afisareVehicul(out); }
 
+// FUNCTIE VALOAREA REALA VEHICUL
+double VehiculElectric::valoareaRealaVehicul() const
+{
+	int vechime = 2024 - anFabricatie;
+	// double indiceVechime = pow(0.90, vechime); // in fiecare an scade cu 10%, si ramane in (0,1)
+	double indiceVechime = 1 - (0.1 * vechime);
+	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
+	double indiceAutonomie = autonomieKm > 500 ? 1.1 : 1.0;
+	double indiceTimpIncarcare = timpIncarcare < 6 ? 1.1 : 1.0; // 6 ore
+	return pret * indiceVechime * indiceMarca * indiceAutonomie;
+}
+
+// FUNCTIE COST FOLOSIRE SI INTRETINERE
+double VehiculElectric::costFolosireSiIntretinere() const
+{
+	double cost = 0.01 * valoareaRealaVehicul(); // intretinerea pe an, 0.01 in loc de 0.03, masinile electrice sunt mai fiabile
+	double costElectricitateOIncarcare = 80; // 80 lei/incarcare
+	// presupunem ca se fac 20000 km/an
+	cost += (20000 / autonomieKm) * costElectricitateOIncarcare;
+	return cost;
+}
 
 
 // --------- CLASA VEHICULHIBRID ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -298,6 +378,12 @@ public:
 	friend ostream& operator <<(ostream&, const VehiculHibrid&); // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
 	istream& citireVehicul(istream& in) override;
 	ostream& afisareVehicul(ostream& out) const override;
+
+	// FUNCTIE VALOAREA REALA VEHICUL
+	double valoareaRealaVehicul() const override;
+
+	// FUNCTIE COST FOLOSIRE SI INTRETINERE
+	double costFolosireSiIntretinere() const override;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -350,7 +436,40 @@ ostream& VehiculHibrid::afisareVehicul(ostream& out) const
 }
 ostream& operator <<(ostream& out, const VehiculHibrid& obj) { return obj.afisareVehicul(out); }
 
+// FUNCTIE VALOAREA REALA VEHICUL
+double VehiculHibrid::valoareaRealaVehicul() const
+{
+	int vechime = 2024 - anFabricatie;
+	// double indiceVechime = pow(0.90, vechime); // in fiecare an scade cu 10%, si ramane in (0,1)
+	double indiceVechime = 1 - (0.1 * vechime);
+	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
+	double indiceConsum = consum < 5 ? 1.1 : 1.0;
+	double indiceAutonomie = autonomieKm > 500 ? 1.1 : 1.0;
+	double indiceTimpIncarcare = timpIncarcare < 6 ? 1.1 : 1.0; // 6 ore
+	return pret * indiceVechime * indiceMarca * indiceConsum * indiceAutonomie * indiceTimpIncarcare;
+}
 
+// FUNCTIE COST FOLOSIRE SI INTRETINERE
+double VehiculHibrid::costFolosireSiIntretinere() const
+{
+	double cost = 0.02 * valoareaRealaVehicul(); // intretinerea pe an, 0.02 in loc de 0.03, masinile hibride sunt mai fiabile, dar nu la fel de fiabile ca cele electrice care eu indicele 0.01
+	double costCarburant = 0; // voi calcula conmform https://www.capital.ro/preturile-la-pompa-9-aprilie-benzina-motorina-pretul-petrolului.html#:~:text=Conform%20Peco%20Online%2C%20un%20litru%20de%20benzin%C4%83%20standard,premium%20cost%C4%83%20%C3%AEntre%207%2C83%20lei%20%C8%99i%208%2C01%20lei.
+	if (tipCarburant == "Benzina")
+		costCarburant = 7.24; 
+	else
+		if (tipCarburant == "Motorina")
+			costCarburant = 7.47; 
+	else
+		costCarburant = 0;
+	// presupunem ca se fac 20000 km/an
+	cost += (20000 / 100) * consum * costCarburant;
+	cost /= 2; // este vehicul hibrid, pp ca se foloseste jumatate din timp motorul electric
+	double costElectricitateOIncarcare = 80; // 80 lei/incarcare
+
+	cost += (20000 / autonomieKm) * costElectricitateOIncarcare;
+	cost /= 2; // este vehicul hibrid, pp ca se foloseste jumatate din timp motorul electric
+	return cost;
+}
 
 
 // --------- CLASA CLIENT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -382,6 +501,9 @@ public:
 	// OPERATORII >> SI <<
 	friend istream& operator >>(istream&, Client&);
 	friend ostream& operator <<(ostream&, const Client&);
+
+	// FUNCTIE CALCULARE CERDIT SCORE
+	double calculCreditScore(); // plataRamasa / creditMaxim
 
 };
 
@@ -490,6 +612,17 @@ ostream& operator <<(ostream& out, const Client& obj)
 	return out;
 }
 
+// FUNCTIE CALCULARE CREDIT SCORE
+double Client::calculCreditScore()
+{
+	double creditScore = 0;
+	if (creditMaxim != 0)
+		creditScore = plataRamasa / creditMaxim;
+	else
+		creditScore = 0;
+	return creditScore;
+}
+
 // --------- CLASA SHOWROOM ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Showroom {
@@ -516,6 +649,12 @@ public:
 	// OPERATORII >> SI <<
 	friend istream& operator >>(istream&, Showroom&);
 	friend ostream& operator <<(ostream&, const Showroom&);
+
+	// FUNCTIE CALCULARE PRET VEHICUL PT CLIENT (PRET CUMPRARE + PROFIT)
+	double calculPretVehiculCuProfit(Vehicul*);
+
+	// GETTER VEHICULE DISPONIBILE
+	vector<Vehicul*> getVehiculeDisponibile() const;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -604,6 +743,15 @@ ostream& operator <<(ostream& out, const Showroom& obj)
 	return out;
 }
 
+// FUNCTIE CALCULARE PRET VEHICUL PT CLIENT (PRET CUMPRARE + PROFIT)
+double Showroom::calculPretVehiculCuProfit(Vehicul* v)
+{
+	return v->valoareaRealaVehicul() + 0.05 * v->valoareaRealaVehicul();
+}
+
+// GETTER VEHICULE DISPONIBILE
+vector<Vehicul*> Showroom::getVehiculeDisponibile() const{ return vehiculeDisponibile; }
+
 int main()
 {
 	Vehicul v1;
@@ -632,6 +780,10 @@ int main()
 	Showroom s1;
 	cin >> s1;
 	cout << s1;
+	cout << endl;
+	vector<Vehicul*> vehiculeDisponibile = s1.getVehiculeDisponibile();
+	cout << "Pretul vehiculului 1 fara profit este : " << vehiculeDisponibile[0]->valoareaRealaVehicul() << endl;
+	cout << "\nPretul vehiculului 1 cu profit este: " << s1.calculPretVehiculCuProfit(vehiculeDisponibile[0]) << endl;
 
 
 	return 0;
