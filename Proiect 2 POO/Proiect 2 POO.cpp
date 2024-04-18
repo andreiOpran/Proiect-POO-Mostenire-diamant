@@ -9,7 +9,7 @@ class InterfataVehicul {
 
 public:
 	virtual double valoareaRealaVehicul() const = 0;
-	virtual double costFolosireSiIntretinere() const = 0; // calcul pentru 1 an, presupunem ca intretinerea este 0.03 * valoarea reala a vehiculului
+	virtual double costFolosireSiIntretinere() const = 0; // calcul pentru 1 an, presupunem ca intretinerea este X * valoarea reala a vehiculului, unde X = 0.03 la VehiculCarburant, X = 0.01 la VehiculElectric, X = 0.02 la VehiculHibrid
 };
 
 
@@ -623,6 +623,7 @@ double Client::calculCreditScore()
 	return creditScore;
 }
 
+
 // --------- CLASA SHOWROOM ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Showroom {
@@ -630,6 +631,7 @@ class Showroom {
 	string adresa;
 	int nrVehiculeDisponibile;
 	vector<Vehicul*> vehiculeDisponibile;
+
 public:
 	// CONSTRUCTOR FARA PARAMETRI
 	Showroom();
@@ -734,12 +736,17 @@ ostream& operator <<(ostream& out, const Showroom& obj)
 	out << "\nNume showroom: " << obj.numeShowroom << endl;
 	out << "Adresa showroom: " << obj.adresa << endl;
 	cout << endl;
-	out << "Vehicule disponibile:\n" << endl;
-	for (int i = 0; i < obj.nrVehiculeDisponibile; i++)
+	if (obj.nrVehiculeDisponibile)
 	{
-		out << "Vehiculul " << i + 1 << ":" << endl;
-		out << *obj.vehiculeDisponibile[i] << endl;
+		out << "Vehicule disponibile:\n" << endl;
+		for (int i = 0; i < obj.nrVehiculeDisponibile; i++)
+		{
+			out << "Vehiculul " << i + 1 << ":" << endl;
+			out << *obj.vehiculeDisponibile[i] << endl;
+		}
 	}
+	else
+		out << "Showroom-ul nu are vehicule in stoc.\n";
 	return out;
 }
 
@@ -755,8 +762,8 @@ vector<Vehicul*> Showroom::getVehiculeDisponibile() const{ return vehiculeDispon
 int main()
 {
 	Vehicul v1;
-	/*cin >> v1;*/
-	/*cout << v1 << endl;*/
+	cin >> v1;
+	cout << v1 << endl;
 
 	//VehiculCarburant v2;
 	///*cin >> v2;*/
@@ -777,13 +784,13 @@ int main()
 	cin >> c1;
 	cout << c1;*/
 
-	Showroom s1;
-	cin >> s1;
-	cout << s1;
-	cout << endl;
-	vector<Vehicul*> vehiculeDisponibile = s1.getVehiculeDisponibile();
-	cout << "Pretul vehiculului 1 fara profit este : " << vehiculeDisponibile[0]->valoareaRealaVehicul() << endl;
-	cout << "\nPretul vehiculului 1 cu profit este: " << s1.calculPretVehiculCuProfit(vehiculeDisponibile[0]) << endl;
+	//Showroom s1;
+	//cin >> s1;
+	//cout << s1;
+	//cout << endl;
+	//vector<Vehicul*> vehiculeDisponibile = s1.getVehiculeDisponibile();
+	///*cout << "Pretul vehiculului 1 fara profit este : " << vehiculeDisponibile[0]->valoareaRealaVehicul() << endl;
+	//cout << "\nPretul vehiculului 1 cu profit este: " << s1.calculPretVehiculCuProfit(vehiculeDisponibile[0]) << endl;*/
 
 
 	return 0;
