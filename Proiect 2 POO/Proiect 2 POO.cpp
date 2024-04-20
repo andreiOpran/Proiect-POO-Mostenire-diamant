@@ -4,12 +4,15 @@
 #include <vector>
 using namespace std;
 
+class Vehicul; // ca sa mearga functia din InterfataVehicul care returneaza Vehicul*
 
 class InterfataVehicul {
 
 public:
 	virtual double valoareaRealaVehicul() const = 0;
 	virtual double costFolosireSiIntretinere() const = 0; // calcul pentru 1 an, presupunem ca intretinerea este X * valoarea reala a vehiculului, unde X = 0.03 la VehiculCarburant, X = 0.01 la VehiculElectric, X = 0.02 la VehiculHibrid
+	virtual Vehicul* virtualCopyConstructor() const = 0; // PT CC SI OP= DIN SHOWROOM SI CLIENT
+
 };
 
 
@@ -68,6 +71,9 @@ public:
 
 	// FUNCTIE COST FOLOSIRE SI INTRETINERE
 	double costFolosireSiIntretinere() const override;
+
+	// VCC
+	Vehicul* virtualCopyConstructor() const override;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -139,6 +145,9 @@ double Vehicul::valoareaRealaVehicul() const
 // FUNCTIE COST FOLOSIRE SI INTRETINERE
 double Vehicul::costFolosireSiIntretinere() const { return 0.03 * valoareaRealaVehicul(); }
 
+// VCC
+Vehicul* Vehicul::virtualCopyConstructor() const { return new Vehicul(*this); }
+
 
 // --------- CLASA VEHICULCARBURANT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -176,6 +185,9 @@ public:
 
 	// FUNCTIE COST FOLOSIRE SI INTRETINERE
 	double costFolosireSiIntretinere() const override;
+
+	// VCC
+	virtual Vehicul* virtualCopyConstructor() const override;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -247,6 +259,10 @@ double VehiculCarburant::costFolosireSiIntretinere() const
     return cost;
 }
 
+// VCC
+Vehicul* VehiculCarburant::virtualCopyConstructor() const { return new VehiculCarburant(*this); }
+
+
 // --------- CLASA VEHICULELECTRIC ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class VehiculElectric : virtual public Vehicul {
@@ -283,6 +299,9 @@ public:
 
 	// FUNCTIE COST FOLOSIRE SI INTRETINERE
 	double costFolosireSiIntretinere() const override;
+
+	// VCC
+	virtual Vehicul* virtualCopyConstructor() const override;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -348,6 +367,8 @@ double VehiculElectric::costFolosireSiIntretinere() const
 	return cost;
 }
 
+// VCC
+Vehicul* VehiculElectric::virtualCopyConstructor() const { return new VehiculElectric(*this); }
 
 // --------- CLASA VEHICULHIBRID ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -384,6 +405,9 @@ public:
 
 	// FUNCTIE COST FOLOSIRE SI INTRETINERE
 	double costFolosireSiIntretinere() const override;
+
+	// VCC
+	Vehicul* virtualCopyConstructor() const override;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -393,7 +417,7 @@ VehiculHibrid::VehiculHibrid() : VehiculCarburant(), VehiculElectric(), tipHibri
 VehiculHibrid::VehiculHibrid(string marca, string model, int anFabricatie, bool disponibil, double pret, string tipCarburant, double consum, double autonomieKm, double timpIncarcare, char tipHibrid) : VehiculCarburant(marca, model, anFabricatie, disponibil, pret, tipCarburant, consum), VehiculElectric(marca, model, anFabricatie, disponibil, pret, autonomieKm, timpIncarcare), tipHibrid(tipHibrid) {}
 
 //  COPY CONSTRUCTOR
-VehiculHibrid::VehiculHibrid(const VehiculHibrid& obj) : VehiculCarburant(obj), VehiculElectric(obj), tipHibrid(obj.tipHibrid) {}
+VehiculHibrid::VehiculHibrid(const VehiculHibrid& obj) : Vehicul(obj), VehiculCarburant(obj), VehiculElectric(obj), tipHibrid(obj.tipHibrid) {}
 
 // OPERATOR =
 VehiculHibrid& VehiculHibrid::operator=(const VehiculHibrid& obj)
@@ -471,6 +495,9 @@ double VehiculHibrid::costFolosireSiIntretinere() const
 	return cost;
 }
 
+// VCC
+Vehicul* VehiculHibrid::virtualCopyConstructor() const { return new VehiculHibrid(*this); }
+
 
 // --------- CLASA CLIENT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -514,7 +541,22 @@ Client::Client() : nume("Anonim"), nrVehiculeCumparate(0), vehiculeCumparate(), 
 Client::Client(string nume, int nrVehiculeCumparate, vector<Vehicul*> vehiculeCumparate, double plataRamasa, double creditMaxim) : nume(nume), nrVehiculeCumparate(nrVehiculeCumparate), vehiculeCumparate(vehiculeCumparate), plataRamasa(plataRamasa), creditMaxim(creditMaxim) {}
 
 // COPY CONSTRUCTOR
-Client::Client(const Client& obj) : nume(obj.nume), nrVehiculeCumparate(obj.nrVehiculeCumparate), vehiculeCumparate(obj.vehiculeCumparate), plataRamasa(obj.plataRamasa), creditMaxim(obj.creditMaxim) {}
+Client::Client(const Client& obj) : nume(obj.nume), plataRamasa(obj.plataRamasa), creditMaxim(obj.creditMaxim) 
+{
+	// deep copy
+
+	for (int i = 0; i < this->nrVehiculeCumparate; i++) // eliberare memorie this
+	{
+		delete this->vehiculeCumparate[i];
+	}
+	this->vehiculeCumparate.clear();
+
+	this->nrVehiculeCumparate = obj.nrVehiculeCumparate;
+	for (int i = 0; i < this->nrVehiculeCumparate; i++)
+	{
+		this->vehiculeCumparate.push_back(obj.vehiculeCumparate[i]->virtualCopyConstructor());
+	}
+}
 
 // OPERATOR =
 Client& Client::operator=(const Client& obj)
@@ -522,10 +564,21 @@ Client& Client::operator=(const Client& obj)
 	if (this != &obj)
 	{
 		this->nume = obj.nume;
-		this->nrVehiculeCumparate = obj.nrVehiculeCumparate;
-		this->vehiculeCumparate = obj.vehiculeCumparate;
 		this->plataRamasa = obj.plataRamasa;
 		this->creditMaxim = obj.creditMaxim;
+
+		//deep copy
+		for (int i = 0; i < this->nrVehiculeCumparate; i++) // eliberare memorie this
+		{
+			delete this->vehiculeCumparate[i];
+		}
+		this->vehiculeCumparate.clear();
+
+		this->nrVehiculeCumparate = obj.nrVehiculeCumparate;
+		for (int i = 0; i < this->nrVehiculeCumparate; i++)
+		{
+			this->vehiculeCumparate.push_back(obj.vehiculeCumparate[i]->virtualCopyConstructor());
+		}
 	}
 	return *this;
 }
@@ -666,7 +719,22 @@ Showroom::Showroom() : numeShowroom("Nedefinit"), adresa("Nedefinita"), nrVehicu
 Showroom::Showroom(string numeShowroom, string adresa, int nrVehiculeDisponibile, vector<Vehicul*> vehiculeDisponibile) : numeShowroom(numeShowroom), adresa(adresa), nrVehiculeDisponibile(nrVehiculeDisponibile), vehiculeDisponibile(vehiculeDisponibile) {}
 
 // COPY CONSTRUCTOR
-Showroom::Showroom(const Showroom& obj) : numeShowroom(obj.numeShowroom), adresa(obj.adresa), nrVehiculeDisponibile(obj.nrVehiculeDisponibile), vehiculeDisponibile(obj.vehiculeDisponibile) {}
+Showroom::Showroom(const Showroom& obj) : numeShowroom(obj.numeShowroom), adresa(obj.adresa) 
+{
+	//deep copy
+
+	for (int i = 0; i < this->nrVehiculeDisponibile; i++) // stergere this
+	{
+		delete this->vehiculeDisponibile[i];
+	}
+	this->vehiculeDisponibile.clear();
+
+	this->nrVehiculeDisponibile = obj.nrVehiculeDisponibile;
+	for (int i = 0; i < this->nrVehiculeDisponibile; i++)
+	{
+		this->vehiculeDisponibile.push_back(obj.vehiculeDisponibile[i]->virtualCopyConstructor());
+	}
+}
 
 // OPERATOR =
 Showroom& Showroom::operator=(const Showroom& obj)
@@ -675,8 +743,20 @@ Showroom& Showroom::operator=(const Showroom& obj)
 	{
 		this->numeShowroom = obj.numeShowroom;
 		this->adresa = obj.adresa;
+		
+		//deep copy
+
+		for (int i = 0; i < this->nrVehiculeDisponibile; i++) // stergere this
+		{
+			delete this->vehiculeDisponibile[i];
+		}
+		this->vehiculeDisponibile.clear();
+
 		this->nrVehiculeDisponibile = obj.nrVehiculeDisponibile;
-		this->vehiculeDisponibile = obj.vehiculeDisponibile;
+		for (int i = 0; i < this->nrVehiculeDisponibile; i++)
+		{
+			this->vehiculeDisponibile.push_back(obj.vehiculeDisponibile[i]->virtualCopyConstructor());
+		}
 	}
 	return *this;
 }
@@ -761,10 +841,18 @@ vector<Vehicul*> Showroom::getVehiculeDisponibile() const{ return vehiculeDispon
 
 int main()
 {
-	Vehicul v1;
-	cin >> v1;
-	cout << v1 << endl;
+	Vehicul* v1 = new VehiculHibrid();
+	cin >> *v1;
+	//Vehicul* v2 = v1;
+	//cout << *v2;
+	
+	 cout << *(v1->virtualCopyConstructor()); // problema la copy construcotr
+	
+	//cout << *v1;
+	
 
+	delete[] v1;
+	//delete[] v2;
 	//VehiculCarburant v2;
 	///*cin >> v2;*/
 	//cout << v2 << endl;
@@ -795,3 +883,5 @@ int main()
 
 	return 0;
 }
+
+// de modificat cc si op= la showroom 
