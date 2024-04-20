@@ -654,14 +654,15 @@ ostream& operator <<(ostream& out, const Client& obj)
 {
 	out << "\nNume: " << obj.nume << endl;
 	cout << endl;
-	out << "Vehicule cumparate:\n" << endl;
+	if(obj.nrVehiculeCumparate)
+		out << "Vehicule cumparate:\n\n" << endl;
 	for (int i = 0; i < obj.nrVehiculeCumparate; i++)
 	{
 		out << "Vehiculul " << i + 1 << ":" << endl;
 		out << *obj.vehiculeCumparate[i] << endl;
 	}
 	out << "\nPlata ramasa: " << obj.plataRamasa << endl;
-	out << "Credit maxim: " << obj.creditMaxim << endl;
+	out << "Credit maxim: " << obj.creditMaxim << endl << endl;
 	return out;
 }
 
@@ -839,19 +840,148 @@ double Showroom::calculPretVehiculCuProfit(Vehicul* v)
 // GETTER VEHICULE DISPONIBILE
 vector<Vehicul*> Showroom::getVehiculeDisponibile() const{ return vehiculeDisponibile; }
 
+// --------- CLASA TRANZACTIE ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class Tranzactie {
+	const int idTranzactie;
+	static int nrTranzactii;
+	Client client;
+	Vehicul* vehiculCumparat;
+	double pretFinal; // pret final = avans + credit
+	double avans;
+	double credit;
+
+public:
+
+// CONSTRUCTOR FARA PARAMETRI
+	Tranzactie();
+
+	// CONSTRUCTOR CU PARAMETRI
+	Tranzactie(Client, Vehicul*, double, double, double);
+
+	// COPY CONSTRUCTOR
+	Tranzactie(const Tranzactie&);
+
+	// OPERATOR =
+	Tranzactie& operator=(const Tranzactie&);
+
+	// DESTRUCTOR
+	~Tranzactie();
+
+	// OPERATORII >> SI <<
+	friend istream& operator >>(istream&, Tranzactie&);
+	friend ostream& operator <<(ostream&, const Tranzactie&);
+
+	// GETTER ID TRANZACTIE
+	int getIdTranzactie() const;
+};
+
+// CONSTRUCTOR FARA PARAMETRI
+Tranzactie::Tranzactie() : idTranzactie(++nrTranzactii + 100000), client(), vehiculCumparat(), pretFinal(0), avans(0), credit(0) {}
+
+// CONSTRUCTOR CU PARAMETRI
+Tranzactie::Tranzactie(Client client, Vehicul* vehiculCumparat, double pretFinal, double avans, double credit) : idTranzactie(++nrTranzactii + 100000), client(client), vehiculCumparat(vehiculCumparat), pretFinal(pretFinal), avans(avans), credit(credit) {}
+
+// COPY CONSTRUCTOR
+Tranzactie::Tranzactie(const Tranzactie& obj) : idTranzactie(obj.idTranzactie), client(obj.client), pretFinal(obj.pretFinal), avans(obj.avans), credit(obj.credit)
+{
+	vehiculCumparat = obj.vehiculCumparat->virtualCopyConstructor();
+}
+
+// OPERATOR =
+Tranzactie& Tranzactie::operator=(const Tranzactie& obj)
+{
+	if (this != &obj)
+	{
+		this->client = obj.client;
+		this->pretFinal = obj.pretFinal;
+		this->avans = obj.avans;
+		this->credit = obj.credit;
+		this->vehiculCumparat = obj.vehiculCumparat->virtualCopyConstructor();
+	}
+	return *this;
+}
+
+// DESTRUCTOR
+Tranzactie::~Tranzactie()
+{
+	delete vehiculCumparat;
+}
+
+// OPERATORII >> SI <<
+istream& operator >>(istream& in, Tranzactie& obj)
+{
+	cout << "Clientul care face tranzactia:\n";
+	in >> obj.client;
+	cout << "\nVehiculul cumparat:\n";
+	char tipMotor;
+	cout << "\nCe tip de motor are vehiculul?\nIntroduceti litera corespunzatoare: C - Carburant, E - Electric, H - Hibrid." << endl << "> ";
+	in >> tipMotor;
+	cout << endl;
+	if (tipMotor == 'C')
+	{
+		VehiculCarburant* v = new VehiculCarburant();
+		in >> *v;
+		obj.vehiculCumparat = v;
+	}
+	else if (tipMotor == 'E')
+	{
+		VehiculElectric* v = new VehiculElectric();
+		in >> *v;
+		obj.vehiculCumparat = v;
+	}
+	else if (tipMotor == 'H')
+	{
+		VehiculHibrid* v = new VehiculHibrid();
+		in >> *v;
+		obj.vehiculCumparat = v;
+	}
+	else
+	{
+		cout << "Introduceti una dintre literele C, E sau H." << endl;
+	}
+	cout << "Atentie! Pretul final trebuie sa fie egal cu suma dintre avans si credit.\nUrmatoarele date care se cer sunt: pretul final, avansul si creditul.\n";
+	cout << "Pret final: ";
+	in >> obj.pretFinal;
+	cout << "Avans: ";
+	in >> obj.avans;
+	cout << "Credit: ";
+	in >> obj.credit;
+	return in;
+}
+ostream& operator <<(ostream& out, const Tranzactie& obj)
+{
+	out << "\nTranzactia cu id-ul " << obj.idTranzactie << ":\n\n";
+	out << "Clientul care face tranzactia:\n" << obj.client;
+	out << "Vehiculul cumparat:\n" << *obj.vehiculCumparat;
+	out << "Pret final: " << obj.pretFinal << endl;
+	out << "Avans: " << obj.avans << endl;
+	out << "Credit: " << obj.credit << endl;
+	return out;
+}
+
+// GETTER ID TRANZACTIE
+int Tranzactie::getIdTranzactie() const { return idTranzactie; }
+
+int Tranzactie::nrTranzactii = 0;
+
 int main()
 {
-	Vehicul* v1 = new VehiculHibrid();
-	cin >> *v1;
+	Tranzactie obj;
+	cin >> obj;
+	cout << obj;
+
+	//Vehicul* v1 = new VehiculHibrid();
+	//cin >> *v1;
 	//Vehicul* v2 = v1;
 	//cout << *v2;
-	
-	 cout << *(v1->virtualCopyConstructor()); // problema la copy construcotr
+	//cout << (typeid(Vehicul) == typeid(v1));
+	 //cout << *(v1->virtualCopyConstructor()); // problema la copy construcotr
 	
 	//cout << *v1;
 	
 
-	delete[] v1;
+	//delete[] v1;
 	//delete[] v2;
 	//VehiculCarburant v2;
 	///*cin >> v2;*/
