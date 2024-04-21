@@ -60,12 +60,6 @@ public:
 	istream& citireVehicul(istream& in) override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
 	ostream& afisareVehicul(ostream& out) const override; // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out) // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
 
-	// SETTER DISPONIBIL
-	void setDisponibil(bool);
-
-	// GETTER DISPONIBIL
-	bool getDisponibil() const;
-
 	// FUNCTIE VALOAREA REALA VEHICUL
 	double valoareaRealaVehicul() const override;
 
@@ -74,6 +68,31 @@ public:
 
 	// VCC
 	Vehicul* virtualCopyConstructor() const override;
+
+	// SETTER MARCA
+	void setMarca(string);
+
+	// SETTER MODEL
+	void setModel(string);
+
+	// SETTER AN FABRICATIE
+	void setAnFabricatie(int);
+
+	// SETTER DISPONIBIL
+	void setDisponibil(bool);
+
+	// GETTER DISPONIBIL
+	bool getDisponibil() const;
+
+	// SETTER PRET
+	void setPret(double);
+
+	// GETTER MARCA
+	string getMarca() const;
+
+	// GETTER MODEL
+	string getModel() const;
+
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -125,12 +144,6 @@ ostream& Vehicul::afisareVehicul(ostream& out) const
 	return out;
 }
 ostream& operator <<(ostream& out, const Vehicul& obj) { return obj.afisareVehicul(out); }
-	
-// SETTER DISPONIBIL
-void Vehicul::setDisponibil(bool disponibil) { this->disponibil = disponibil; }
-
-// GETTER DISPONIBIL
-bool Vehicul::getDisponibil() const{ return disponibil; }
 
 // FUNCTIE VALOAREA REALA VEHICUL
 double Vehicul::valoareaRealaVehicul() const
@@ -139,7 +152,10 @@ double Vehicul::valoareaRealaVehicul() const
 	// double indiceVechime = pow(0.90, vechime); // in fiecare an scade cu 10%, si ramane in (0,1)
 	double indiceVechime = 1 - (0.1 * vechime);
 	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
-	return pret * indiceVechime * indiceMarca;
+	if(pret * indiceVechime * indiceMarca > pret)
+		return pret;
+	else
+		return pret * indiceVechime * indiceMarca;
 }
 
 // FUNCTIE COST FOLOSIRE SI INTRETINERE
@@ -147,6 +163,30 @@ double Vehicul::costFolosireSiIntretinere() const { return 0.03 * valoareaRealaV
 
 // VCC
 Vehicul* Vehicul::virtualCopyConstructor() const { return new Vehicul(*this); }
+
+// SETTER MARCA
+void Vehicul::setMarca(string marca) { this->marca = marca; }
+
+// SETTER MODEL
+void Vehicul::setModel(string model) { this->model = model; }
+
+// SETTER AN FABRICATIE
+void Vehicul::setAnFabricatie(int anFabricatie) { this->anFabricatie = anFabricatie; }
+
+// SETTER DISPONIBIL
+void Vehicul::setDisponibil(bool disponibil) { this->disponibil = disponibil; }
+
+// GETTER DISPONIBIL
+bool Vehicul::getDisponibil() const { return disponibil; }
+
+// SETTER PRET
+void Vehicul::setPret(double pret) { this->pret = pret; }
+
+// GETTER MARCA
+string Vehicul::getMarca() const { return marca; }
+
+// GETTER MODEL
+string Vehicul::getModel() const { return model; }
 
 
 // --------- CLASA VEHICULCARBURANT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -188,6 +228,12 @@ public:
 
 	// VCC
 	virtual Vehicul* virtualCopyConstructor() const override;
+
+	// SETTER TIP CARBURANT
+	void setTipCarburant(string);
+
+	// SETTER CONSUM
+	void setConsum(double);
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -239,7 +285,10 @@ double VehiculCarburant::valoareaRealaVehicul() const
 	double indiceVechime = 1 - (0.1 * vechime);
 	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
 	double indiceConsum = consum < 5 ? 1.1 : 1.0;
-	return pret * indiceVechime * indiceMarca * indiceConsum;
+	if (pret * indiceVechime * indiceMarca * indiceConsum > pret)
+		return pret;
+	else
+		return pret * indiceVechime * indiceMarca * indiceConsum;
 }
 
 // FUNCTIE COST FOLOSIRE SI INTRETINERE
@@ -261,6 +310,12 @@ double VehiculCarburant::costFolosireSiIntretinere() const
 
 // VCC
 Vehicul* VehiculCarburant::virtualCopyConstructor() const { return new VehiculCarburant(*this); }
+
+// SETTER TIP CARBURANT
+void VehiculCarburant::setTipCarburant(string tipCarburant) { this->tipCarburant = tipCarburant; }
+
+// SETTER CONSUM
+void VehiculCarburant::setConsum(double consum) { this->consum = consum; }
 
 
 // --------- CLASA VEHICULELECTRIC ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -302,6 +357,12 @@ public:
 
 	// VCC
 	virtual Vehicul* virtualCopyConstructor() const override;
+
+	// SETTER AUTONOMIE KM
+	void setAutonomieKm(double);
+
+	// SETTER TIMP INCARCARE
+	void setTimpIncarcare(double);
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -354,7 +415,10 @@ double VehiculElectric::valoareaRealaVehicul() const
 	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
 	double indiceAutonomie = autonomieKm > 500 ? 1.1 : 1.0;
 	double indiceTimpIncarcare = timpIncarcare < 6 ? 1.1 : 1.0; // 6 ore
-	return pret * indiceVechime * indiceMarca * indiceAutonomie;
+	if (pret * indiceVechime * indiceMarca * indiceAutonomie * indiceTimpIncarcare > pret)
+		return pret;
+	else
+		return pret * indiceVechime * indiceMarca * indiceAutonomie * indiceTimpIncarcare;
 }
 
 // FUNCTIE COST FOLOSIRE SI INTRETINERE
@@ -369,6 +433,12 @@ double VehiculElectric::costFolosireSiIntretinere() const
 
 // VCC
 Vehicul* VehiculElectric::virtualCopyConstructor() const { return new VehiculElectric(*this); }
+
+// SETTER AUTONOMIE KM
+void VehiculElectric::setAutonomieKm(double autonomieKm) { this->autonomieKm = autonomieKm; }
+
+// SETTER TIMP INCARCARE
+void VehiculElectric::setTimpIncarcare(double timpIncarcare) { this->timpIncarcare = timpIncarcare; }
 
 // --------- CLASA VEHICULHIBRID ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -408,13 +478,16 @@ public:
 
 	// VCC
 	Vehicul* virtualCopyConstructor() const override;
+
+	// SETTER TIP HIBRID
+	void setTipHibrid(char);
 };
 
 // CONSTRUCTOR FARA PARAMETRI
 VehiculHibrid::VehiculHibrid() : VehiculCarburant(), VehiculElectric(), tipHibrid('0') {}
 
 // CONSTRUCTOR CU PARAMETRI
-VehiculHibrid::VehiculHibrid(string marca, string model, int anFabricatie, bool disponibil, double pret, string tipCarburant, double consum, double autonomieKm, double timpIncarcare, char tipHibrid) : VehiculCarburant(marca, model, anFabricatie, disponibil, pret, tipCarburant, consum), VehiculElectric(marca, model, anFabricatie, disponibil, pret, autonomieKm, timpIncarcare), tipHibrid(tipHibrid) {}
+VehiculHibrid::VehiculHibrid(string marca, string model, int anFabricatie, bool disponibil, double pret, string tipCarburant, double consum, double autonomieKm, double timpIncarcare, char tipHibrid) : Vehicul(marca, model, anFabricatie, disponibil, pret), VehiculCarburant(marca, model, anFabricatie, disponibil, pret, tipCarburant, consum), VehiculElectric(marca, model, anFabricatie, disponibil, pret, autonomieKm, timpIncarcare), tipHibrid(tipHibrid) {}
 
 //  COPY CONSTRUCTOR
 VehiculHibrid::VehiculHibrid(const VehiculHibrid& obj) : Vehicul(obj), VehiculCarburant(obj), VehiculElectric(obj), tipHibrid(obj.tipHibrid) {}
@@ -470,7 +543,10 @@ double VehiculHibrid::valoareaRealaVehicul() const
 	double indiceConsum = consum < 5 ? 1.1 : 1.0;
 	double indiceAutonomie = autonomieKm > 500 ? 1.1 : 1.0;
 	double indiceTimpIncarcare = timpIncarcare < 6 ? 1.1 : 1.0; // 6 ore
-	return pret * indiceVechime * indiceMarca * indiceConsum * indiceAutonomie * indiceTimpIncarcare;
+	if (pret * indiceVechime * indiceMarca * indiceConsum * indiceAutonomie * indiceTimpIncarcare > pret)
+		return pret;
+	else
+		return pret * indiceVechime * indiceMarca * indiceConsum * indiceAutonomie * indiceTimpIncarcare;
 }
 
 // FUNCTIE COST FOLOSIRE SI INTRETINERE
@@ -497,6 +573,9 @@ double VehiculHibrid::costFolosireSiIntretinere() const
 
 // VCC
 Vehicul* VehiculHibrid::virtualCopyConstructor() const { return new VehiculHibrid(*this); }
+
+// SETTER TIP HIBRID
+void VehiculHibrid::setTipHibrid(char tipHibrid) { this->tipHibrid = tipHibrid; }
 
 
 // --------- CLASA CLIENT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -954,7 +1033,7 @@ ostream& operator <<(ostream& out, const Tranzactie& obj)
 	out << "\nTranzactia cu id-ul " << obj.idTranzactie << ":\n\n";
 	out << "Clientul care face tranzactia:\n" << obj.client;
 	out << "Vehiculul cumparat:\n" << *obj.vehiculCumparat;
-	out << "Pret final: " << obj.pretFinal << endl;
+	out << "Pret final: " << obj.pretFinal << endl; 
 	out << "Avans: " << obj.avans << endl;
 	out << "Credit: " << obj.credit << endl;
 	return out;
@@ -967,6 +1046,583 @@ int Tranzactie::nrTranzactii = 0;
 
 int main()
 {
+	// MENIU INTERACTIV
+
+	vector<Vehicul*> vehicule;
+	vector<Client> clienti;
+	vector<Showroom> showroomuri;
+	vector<Tranzactie> tranzactii;
+
+	Vehicul* daciaLogan = new VehiculCarburant("Dacia", "Logan", 2015, true, 10000, "Motorina", 5.5);
+	Vehicul* daciaSpring = new VehiculElectric("Dacia", "Spring", 2020, true, 15000, 200, 6);
+	Vehicul* daciaJogger = new VehiculHibrid("Dacia", "Jogger", 2025, true, 20000, "Benzina", 6, 500, 3, 'F');
+	vehicule.push_back(daciaLogan);
+	vehicule.push_back(daciaSpring);
+	vehicule.push_back(daciaJogger);
+
+
+	bool okAfisareEndlInceput = true;
+	int k = 1, comanda;
+	while (k == 1)
+	{
+		if (okAfisareEndlInceput == false)
+		{
+			cout << endl;
+			cout << "// ------------------------------------------------------------------------------------------------------------------ //" << endl << endl;
+		}
+		if (okAfisareEndlInceput == true)
+		{
+			cout << "Dealer auto\n";
+			cout << endl;
+			okAfisareEndlInceput = false;
+		}
+		cout << "1. Intrare in submeniul Modele de vehicule\n";
+		cout << "2. Intrare in submeniul Clienti\n";
+		cout << "3. Intrare in submeniul Showroom\n";
+		cout << "4. Intrare in submeniul Tranzactii\n";
+		cout << "\n5. Iesire din program\n";
+		cout << endl << "> ";
+		cin >> comanda;
+		switch (comanda)
+		{
+		case 1:
+		{
+			int ramaiInVehicul = 1;
+			while (ramaiInVehicul == 1)
+			{
+				int comandaVehicul;
+				cout << endl;
+				cout << "// ------------------------------------------------------------------------------------------------------------------ //";
+				cout << endl << endl;
+				cout << "1. Adaugare model de vehicul\n";
+				cout << "2. Afisare modele vehicule\n";
+				cout << "3. Stergere vehicul\n";
+				cout << "4. Modificare model vehicul\n";
+				cout << "5. Afisare valoarea reala al unui model de vehicul\n";
+				cout << "6. Afisare cost folosire si intretinere al unui model de vehicul\n";
+				cout << "\n7. Iesire din submeniul Modele de vehicule\n";
+				cout << endl << "> ";
+				cin >> comandaVehicul;
+				switch (comandaVehicul)
+				{
+				case 1:
+				{
+					int okIntroducereTipMotor = 0;
+					char tipMotor;
+					cout << "\nCe tip de motor are vehiculul?\nIntroduceti litera corespunzatoare: C - Carburant, E - Electric, H - Hibrid." << endl << "> ";
+					while (okIntroducereTipMotor == 0)
+					{
+						cin >> tipMotor;
+						if (tipMotor == 'C')
+						{
+							Vehicul* p = new VehiculCarburant();
+							cin >> *p;
+							vehicule.push_back(p);
+							okIntroducereTipMotor = 1;
+						}
+						else if (tipMotor == 'E')
+						{
+							Vehicul* p = new VehiculElectric();
+							cin >> *p;
+							vehicule.push_back(p);
+							okIntroducereTipMotor = 1;
+						}
+						else if (tipMotor == 'H')
+						{
+							Vehicul* p = new VehiculHibrid();
+							cin >> *p;
+							vehicule.push_back(p);
+							okIntroducereTipMotor = 1;
+						}
+						else
+							cout << "\nIntroduceti una dintre literele C, E sau H.\n\n" << "> ";
+					}
+					break;
+				}
+				case 2:
+				{
+					if (vehicule.size() == 0)
+						cout << "\nNu exista vehicule inregistrate, deci nu se pot afisa vehiculele.\n";
+					else
+					{
+						for (int i = 0; i < vehicule.size(); i++)
+						{
+							cout << "Vehiculul " << i + 1 << ":" << endl;
+							cout << *vehicule[i] << endl;
+						}
+					}
+					break;
+				}
+				case 3:
+				{
+					if (vehicule.size() == 0)
+						cout << "\nNu exista vehicule inregistrate, deci nu se poate efectua stergerea unui vehicul.\n";
+					else
+					{
+						cout << "\nLista vehicule:\n\n";
+						for (int i = 0; i < vehicule.size(); i++)
+						{
+							cout << "\nVehiculul " << i + 1 << ":" << endl;
+							cout << *vehicule[i] << endl;
+						}
+
+						int okIntroducereIndex = 0, introducereAnulare = 0;
+						int index;
+						char verificareAnulare;
+						cout << "Introduceti indexul vehiculului pe care doriti sa il stergeti.\nPentru anularea operatiei de stergere introduceti litera A.\n\n" << "> ";
+						while (okIntroducereIndex == 0)
+						{
+							cin >> verificareAnulare;
+							if (verificareAnulare == 'A')
+							{
+								introducereAnulare = 1;
+								okIntroducereIndex = 1;
+								break;
+							}
+							else
+								index = verificareAnulare - '0';
+							if (index < 1 || index > vehicule.size())
+								cout << "\nIndex invalid.\nTrebuie sa introduceti un index din intervalul [1," << vehicule.size() << "].\n\n" << "> ";
+							else
+								okIntroducereIndex = 1;
+						}
+						if (introducereAnulare == 0)
+						{
+							delete vehicule[index - 1];
+							vehicule.erase(vehicule.begin() + index - 1);
+							cout << "\nVehiculul a fost sters cu succes.\n";
+						}
+					}
+					break;
+				}
+				case 4:
+				{
+					if (vehicule.size() == 0)
+						cout << "\nNu exista vehicule inregistrate, deci nu se poate efectua modificarea unui vehicul.\n";
+					else
+					{
+						cout << "\nLista vehicule:\n\n";
+						for (int i = 0; i < vehicule.size(); i++)
+						{
+							cout << "\nVehiculul " << i + 1 << ":" << endl;
+							cout << *vehicule[i] << endl;
+						}
+
+						int okIntroducereIndex = 0, introducereAnulare = 0;
+						int index;
+						char verificareAnulare;
+						cout << "Introduceti indexul vehiculului pe care doriti sa il modificati.\nPentru anularea operatiei de modificare introduceti litera A.\n\n" << "> ";
+						while (okIntroducereIndex == 0)
+						{
+							cin >> verificareAnulare;
+							if (verificareAnulare == 'A')
+							{
+								introducereAnulare = 1;
+								okIntroducereIndex = 1;
+								break;
+							}
+							else
+								index = verificareAnulare - '0';
+							if (index < 1 || index > vehicule.size())
+								cout << "\nIndex invalid.\nTrebuie sa introduceti un index din intervalul [1," << vehicule.size() << "].\n\n" << "> ";
+							else
+								okIntroducereIndex = 1;
+						}
+						if (introducereAnulare == 0)
+						{
+							int okModificare = 0;
+							while (okModificare == 0)
+							{
+								int comandaModificare;
+								cout << "\nCe doriti sa modificati la vehiculul " << index << "?\n";
+								if (typeid(*vehicule[index - 1]) == typeid(VehiculCarburant))
+								{
+									cout << "1. Modificare marca\n";
+									cout << "2. Modificare model\n";
+									cout << "3. Modificare an fabricatie\n";
+									cout << "4. Modificare disponibilitate\n";
+									cout << "5. Modificare pret\n";
+									cout << "6. Modificare consum\n";
+									cout << "7. Modificare tip carburant\n";
+									cout << "\n8. Finalizare modificare\n";
+									cout << endl << "> ";
+									cin >> comandaModificare;
+									switch (comandaModificare)
+									{
+									case 1:
+									{
+										string marcaNoua;
+										cout << "Introduceti noua marca: ";
+										cin >> marcaNoua;
+										vehicule[index - 1]->setMarca(marcaNoua);
+										cout << "\nMarca a fost modificata cu succes.\n";
+										break;
+									}
+									case 2:
+									{
+										string modelNou;
+										cout << "Introduceti noul model: ";
+										cin >> modelNou;
+										vehicule[index - 1]->setModel(modelNou);
+										cout << "\nModelul a fost modificat cu succes.\n";
+										break;
+									}
+									case 3:
+									{
+										int anFabricatieNou;
+										cout << "Introduceti noul an de fabricatie: ";
+										cin >> anFabricatieNou;
+										vehicule[index - 1]->setAnFabricatie(anFabricatieNou);
+										cout << "\nAnul de fabricatie a fost modificat cu succes.\n";
+										break;
+									}
+									case 4:
+									{
+										bool disponibilNou;
+										cout << "Introduceti noua disponibilitate (0 - indisponibil, 1 - disponibil): ";
+										cin >> disponibilNou;
+										vehicule[index - 1]->setDisponibil(disponibilNou);
+										cout << "\nDisponibilitatea a fost modificata cu succes.\n";
+										break;
+									}
+									case 5:
+									{
+										double pretNou;
+										cout << "Introduceti noul pret: ";
+										cin >> pretNou;
+										vehicule[index - 1]->setPret(pretNou);
+										cout << "\nPretul a fost modificat cu succes.\n";
+										break;
+									}
+									case 6:
+									{
+										// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
+										double consumNou;
+										cout << "Introduceti noul consum: ";
+										cin >> consumNou;
+										VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); // VERIFICARE
+                                        vehiculCarburant->setConsum(consumNou);
+										//vehicule[index - 1]->setConsum(consumNou);
+										cout << "\nConsumul a fost modificat cu succes.\n";
+										break;
+									}
+									case 7:
+									{
+										// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
+										string tipCarburantNou;
+										cout << "Introduceti noul tip de carburant: ";
+										cin >> tipCarburantNou;
+										VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); // VERIFICARE
+										vehiculCarburant->setTipCarburant(tipCarburantNou);
+										//vehicule[index - 1]->setTipCarburant(tipCarburantNou);
+										cout << "\nTipul de carburant a fost modificat cu succes.\n";
+										break;
+									}
+									case 8:
+									{
+										okModificare = 1;
+										break;
+									}
+									}
+								}
+								else
+									if (typeid(*vehicule[index - 1]) == typeid(VehiculElectric))
+									{
+										cout << "1. Modificare marca\n";
+										cout << "2. Modificare model\n";
+										cout << "3. Modificare an fabricatie\n";
+										cout << "4. Modificare disponibilitate\n";
+										cout << "5. Modificare pret\n";
+										cout << "6. Modificare autonomie\n";
+										cout << "7. Modificare timp incarcare\n";
+										cout << "\n8. Finalizare modificare\n";
+										cout << endl << "> ";
+										cin >> comandaModificare;
+										switch (comandaModificare)
+										{
+										case 1:
+										{
+											string marcaNoua;
+											cout << "Introduceti noua marca: ";
+											cin >> marcaNoua;
+											vehicule[index - 1]->setMarca(marcaNoua);
+											cout << "\nMarca a fost modificata cu succes.\n";
+											break;
+										}
+										case 2:
+										{
+											string modelNou;
+											cout << "Introduceti noul model: ";
+											cin >> modelNou;
+											vehicule[index - 1]->setModel(modelNou);
+											cout << "\nModelul a fost modificat cu succes.\n";
+											break;
+										}
+										case 3:
+										{
+											int anFabricatieNou;
+											cout << "Introduceti noul an de fabricatie: ";
+											cin >> anFabricatieNou;
+											vehicule[index - 1]->setAnFabricatie(anFabricatieNou);
+											cout << "\nAnul de fabricatie a fost modificat cu succes.\n";
+											break;
+										}
+										case 4:
+										{
+											bool disponibilNou;
+											cout << "Introduceti noua disponibilitate (0 - indisponibil, 1 - disponibil): ";
+											cin >> disponibilNou;
+											vehicule[index - 1]->setDisponibil(disponibilNou);
+											cout << "\nDisponibilitatea a fost modificata cu succes.\n";
+											break;
+										}
+										case 5:
+										{
+											double pretNou;
+											cout << "Introduceti noul pret: ";
+											cin >> pretNou;
+											vehicule[index - 1]->setPret(pretNou);
+											cout << "\nPretul a fost modificat cu succes.\n";
+											break;
+										}
+										case 6:
+										{
+											// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
+											double autonomieNoua;
+											cout << "Introduceti noua autonomie: ";
+											cin >> autonomieNoua;
+											VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); // VERIFICARE
+											vehiculElectric->setAutonomieKm(autonomieNoua);
+											//vehicule[index - 1]->setAutonomieKm(autonomieNoua);
+											cout << "\nAutonomia a fost modificata cu succes.\n";
+											break;
+										}
+										case 7:
+										{
+											// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
+											double timpIncarcareNou;
+											cout << "Introduceti noul timp de incarcare: ";
+											cin >> timpIncarcareNou;
+											VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); // VERIFICARE
+											vehiculElectric->setTimpIncarcare(timpIncarcareNou);
+											//vehicule[index - 1]->setTimpIncarcare(timpIncarcareNou);
+											cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
+											break;
+										}
+										case 8:
+										{
+											okModificare = 1;
+											break;
+										}
+										}
+									}
+
+									else
+										if (typeid(*vehicule[index - 1]) == typeid(VehiculHibrid))
+										{
+											cout << "1. Modificare marca\n";
+											cout << "2. Modificare model\n";
+											cout << "3. Modificare an fabricatie\n";
+											cout << "4. Modificare disponibilitate\n";
+											cout << "5. Modificare pret\n";
+											cout << "6. Modificare consum\n";
+											cout << "7. Modificare tip carburant\n";
+											cout << "8. Modificare autonomie\n";
+											cout << "9. Modificare timp incarcare\n";
+											cout << "10. Modificare tip hibrid\n";
+											cout << "\n11. Finalizare modificare\n";
+											cout << endl << "> ";
+											cin >> comandaModificare;
+											switch (comandaModificare)
+											{
+											case 1:
+											{
+												string marcaNoua;
+												cout << "Introduceti noua marca: ";
+												cin >> marcaNoua;
+												vehicule[index - 1]->setMarca(marcaNoua);
+												cout << "\nMarca a fost modificata cu succes.\n";
+												break;
+											}
+											case 2:
+											{
+												string modelNou;
+												cout << "Introduceti noul model: ";
+												cin >> modelNou;
+												vehicule[index - 1]->setModel(modelNou);
+												cout << "\nModelul a fost modificat cu succes.\n";
+												break;
+											}
+											case 3:
+											{
+												int anFabricatieNou;
+												cout << "Introduceti noul an de fabricatie: ";
+												cin >> anFabricatieNou;
+												vehicule[index - 1]->setAnFabricatie(anFabricatieNou);
+												cout << "\nAnul de fabricatie a fost modificat cu succes.\n";
+												break;
+											}
+											case 4:
+											{
+												bool disponibilNou;
+												cout << "Introduceti noua disponibilitate (0 - indisponibil, 1 - disponibil): ";
+												cin >> disponibilNou;
+												vehicule[index - 1]->setDisponibil(disponibilNou);
+												cout << "\nDisponibilitatea a fost modificata cu succes.\n";
+												break;
+											}
+											case 5:
+											{
+												double pretNou;
+												cout << "Introduceti noul pret: ";
+												cin >> pretNou;
+												vehicule[index - 1]->setPret(pretNou);
+												cout << "\nPretul a fost modificat cu succes.\n";
+												break;
+											}
+											case 6:
+											{
+												double consumNou;
+												cout << "Introduceti noul consum: ";
+												cin >> consumNou;
+												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); // VERIFICARE
+												vehiculCarburant->setConsum(consumNou);
+												//vehicule[index - 1]->setConsum(consumNou);
+												cout << "\nConsumul a fost modificat cu succes.\n";
+												break;
+											}
+											case 7:
+											{
+												string tipCarburantNou;
+												cout << "Introduceti noul tip de carburant: ";
+												cin >> tipCarburantNou;
+												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); // VERIFICARE
+												vehiculCarburant->setTipCarburant(tipCarburantNou);
+												//vehicule[index - 1]->setTipCarburant(tipCarburantNou);
+												cout << "\nTipul de carburant a fost modificat cu succes.\n";
+												break;
+											}
+											case 8:
+											{
+												double autonomieNoua;
+												cout << "Introduceti noua autonomie: ";
+												cin >> autonomieNoua;
+												VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); // VERIFICARE
+												vehiculElectric->setAutonomieKm(autonomieNoua);
+												//vehicule[index - 1]->setAutonomieKm(autonomieNoua);
+												cout << "\nAutonomia a fost modificata cu succes.\n";
+												break;
+											}
+											case 9:
+											{
+												double timpIncarcareNou;
+												cout << "Introduceti noul timp de incarcare: ";
+												cin >> timpIncarcareNou;
+												VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); // VERIFICARE
+												vehiculElectric->setTimpIncarcare(timpIncarcareNou);
+												//vehicule[index - 1]->setTimpIncarcare(timpIncarcareNou);
+												cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
+												break;
+											}
+											case 10:
+											{
+												int introducereCorecta = 0;
+												char tipHibridNou;
+												cout << "Introduceti noul tip de hibrid (M - Mild Hybrid, F - Full Hybrid, P - Plug-in Hybrid): ";
+												while (introducereCorecta == 0)
+												{
+													cin >> tipHibridNou;
+													if (tipHibridNou == 'M' || tipHibridNou == 'F' || tipHibridNou == 'P')
+													{
+														VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(vehicule[index - 1]); // VERIFICARE
+														vehiculHibrid->setTipHibrid(tipHibridNou);
+														//vehicule[index - 1]->setTipHibrid(tipHibridNou);
+														cout << "\nTipul de hibrid a fost modificat cu succes.\n";
+														introducereCorecta = 1;
+													}
+													else
+														cout << "Introduceti una dintre literele M, F sau P.\n" << "> ";
+												}
+												break;
+											}
+											case 11:
+											{
+												okModificare = 1;
+												break;
+											}
+											}
+										}
+							}
+						}
+					}
+				}
+				case 5:
+				{
+					if (vehicule.size() == 0)
+						cout << "\nNu exista vehicule inregistrate, deci nu se poate calcula valoarea reala a vreunui vehicul.\n";
+					else
+					{
+						cout << "\nLista vehicule:\n\n";
+						for (int i = 0; i < vehicule.size(); i++)
+						{
+							cout << "\nVehiculul " << i + 1 << ":" << endl;
+							cout << *vehicule[i] << endl;
+						}
+
+						int okIntroducereIndex = 0;
+						int index;
+						cout << "Introduceti indexul vehiculului pentru care doriti sa calculati valoarea reala.\n\n" << "> ";
+						while (okIntroducereIndex == 0)
+						{
+							cin >> index;
+							if (index < 1 || index > vehicule.size())
+								cout << "\nIndex invalid.\nTrebuie sa introduceti un index din intervalul [1," << vehicule.size() << "].\n\n" << "> ";
+							else
+								okIntroducereIndex = 1;
+						}
+						cout << "\nValoarea reala a vehiculului " << vehicule[index - 1]->getMarca() << ' ' << vehicule[index - 1]->getModel() << ", cu index-ul egal cu " << index << ", este de " << vehicule[index - 1]->valoareaRealaVehicul() << " euro.\n";
+					}
+					break;
+				}
+				case 6:
+				{
+					if (vehicule.size() == 0)
+						cout << "\nNu exista vehicule inregistrate, deci nu se poate calcula costul folosirii si intretinerii vreunui vehicul.\n";
+					else
+					{
+						cout << "\nLista vehicule:\n\n";
+						for (int i = 0; i < vehicule.size(); i++)
+						{
+							cout << "\nVehiculul " << i + 1 << ":" << endl;
+							cout << *vehicule[i] << endl;
+						}
+
+						int okIntroducereIndex = 0;
+						int index;
+						cout << "Introduceti indexul vehiculului pentru care doriti sa calculati costul folosirii si intretinerii.\n\n" << "> ";
+						while (okIntroducereIndex == 0)
+						{
+							cin >> index;
+							if (index < 1 || index > vehicule.size())
+								cout << "\nIndex invalid.\nTrebuie sa introduceti un index din intervalul [1," << vehicule.size() << "].\n\n" << "> ";
+							else
+								okIntroducereIndex = 1;
+						}
+						cout << "\nCostul folosirii si intretinerii vehiculului " << vehicule[index - 1]->getMarca() << ' ' << vehicule[index - 1]->getModel() << ", cu index-ul egal cu " << index << ", este de " << vehicule[index - 1]->costFolosireSiIntretinere() << " euro/an, pentru un rulaj de 20.000 km/an.\n";
+					}
+					break;
+				}
+				case 7:
+				{
+					ramaiInVehicul = 0;
+					break;
+				}
+
+				}
+			}
+		}
+		}
+	}
 	return 0;
 }
-
+ 
