@@ -11,7 +11,7 @@ class InterfataVehicul {
 public:
 	virtual double valoareaRealaVehicul() const = 0;
 	virtual double costFolosireSiIntretinere() const = 0; // calcul pentru 1 an, presupunem ca intretinerea este X * valoarea reala a vehiculului, unde X = 0.03 la VehiculCarburant, X = 0.01 la VehiculElectric, X = 0.02 la VehiculHibrid
-	virtual Vehicul* virtualCopyConstructor() const = 0; // PT CC SI OP= DIN SHOWROOM SI CLIENT
+	virtual Vehicul* virtualCopyConstructor() const = 0; // PT CC SI OP= DIN SHOWROOM, CLIENT SI TRANZACTIE	
 
 };
 
@@ -607,7 +607,7 @@ istream& operator >>(istream& in, Client& obj)
 		cout << endl;
 		if (tipMotor == 'C')
 		{
-			VehiculCarburant* v = new VehiculCarburant();
+			Vehicul/*Carburant*/* v = new VehiculCarburant();
 			in >> *v;
 			if (v->getDisponibil() == true)
 			{
@@ -618,7 +618,7 @@ istream& operator >>(istream& in, Client& obj)
 		}
 		else if (tipMotor == 'E')
 		{
-			VehiculElectric* v = new VehiculElectric();
+			Vehicul/*Electric*/* v = new VehiculElectric();
 			in >> *v;
 			if (v->getDisponibil() == true)
 			{
@@ -629,7 +629,7 @@ istream& operator >>(istream& in, Client& obj)
 		}
 		else if (tipMotor == 'H')
 		{
-			VehiculHibrid* v = new VehiculHibrid();
+			Vehicul/*Hibrid*/* v = new VehiculHibrid();
 			in >> *v;
 			if (v->getDisponibil() == true)
 			{
@@ -788,19 +788,19 @@ istream& operator >>(istream& in, Showroom& obj)
 		cout << endl;
 		if (tipMotor == 'C')
 		{
-			VehiculCarburant* v = new VehiculCarburant();
+			Vehicul/*Carburant*/* v = new VehiculCarburant();
 			in >> *v;
 			obj.vehiculeDisponibile.push_back(v);
 		}
 		else if (tipMotor == 'E')
 		{
-			VehiculElectric* v = new VehiculElectric();
+			Vehicul/*Electric*/* v = new VehiculElectric();
 			in >> *v;
 			obj.vehiculeDisponibile.push_back(v);
 		}
 		else if (tipMotor == 'H')
 		{
-			VehiculHibrid* v = new VehiculHibrid();
+			Vehicul/*Hibrid*/* v = new VehiculHibrid();
 			in >> *v;
 			obj.vehiculeDisponibile.push_back(v);
 		}
@@ -920,19 +920,19 @@ istream& operator >>(istream& in, Tranzactie& obj)
 	cout << endl;
 	if (tipMotor == 'C')
 	{
-		VehiculCarburant* v = new VehiculCarburant();
+		Vehicul/*Carburant*/* v = new VehiculCarburant();
 		in >> *v;
 		obj.vehiculCumparat = v;
 	}
 	else if (tipMotor == 'E')
 	{
-		VehiculElectric* v = new VehiculElectric();
+		Vehicul/*Electric*/* v = new VehiculElectric();
 		in >> *v;
 		obj.vehiculCumparat = v;
 	}
 	else if (tipMotor == 'H')
 	{
-		VehiculHibrid* v = new VehiculHibrid();
+		Vehicul/*Hibrid*/* v = new VehiculHibrid();
 		in >> *v;
 		obj.vehiculCumparat = v;
 	}
@@ -967,51 +967,6 @@ int Tranzactie::nrTranzactii = 0;
 
 int main()
 {
-	Tranzactie obj;
-	cin >> obj;
-	cout << obj;
-
-	//Vehicul* v1 = new VehiculHibrid();
-	//cin >> *v1;
-	//Vehicul* v2 = v1;
-	//cout << *v2;
-	//cout << (typeid(Vehicul) == typeid(v1));
-	 //cout << *(v1->virtualCopyConstructor()); // problema la copy construcotr
-	
-	//cout << *v1;
-	
-
-	//delete[] v1;
-	//delete[] v2;
-	//VehiculCarburant v2;
-	///*cin >> v2;*/
-	//cout << v2 << endl;
-
-	//VehiculElectric v3;
-	///*cin >> v3;*/
-	//cout << v3 << endl;
-
-	//VehiculHibrid v4;
-	///*cin >> v4;*/
-	//cout << v4 << endl;
-
-	/*Vehicul* p = new VehiculHibrid();
-	p->afisareVehicul(cout);*/
-
-	/*Client c1;
-	cin >> c1;
-	cout << c1;*/
-
-	//Showroom s1;
-	//cin >> s1;
-	//cout << s1;
-	//cout << endl;
-	//vector<Vehicul*> vehiculeDisponibile = s1.getVehiculeDisponibile();
-	///*cout << "Pretul vehiculului 1 fara profit este : " << vehiculeDisponibile[0]->valoareaRealaVehicul() << endl;
-	//cout << "\nPretul vehiculului 1 cu profit este: " << s1.calculPretVehiculCuProfit(vehiculeDisponibile[0]) << endl;*/
-
-
 	return 0;
 }
 
-// de modificat cc si op= la showroom 
