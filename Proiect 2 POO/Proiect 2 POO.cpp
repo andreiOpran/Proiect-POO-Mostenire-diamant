@@ -1112,7 +1112,7 @@ int main()
 		}
 		if (okAfisareEndlInceput == true)
 		{
-			cout << "Dealer auto\n";
+			cout << "\n// --------------- DEALER AUTO --------------- // \n\n";
 			cout << endl;
 			okAfisareEndlInceput = false;
 		}
