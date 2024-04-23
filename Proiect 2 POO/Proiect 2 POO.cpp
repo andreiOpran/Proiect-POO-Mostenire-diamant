@@ -680,14 +680,14 @@ Client& Client::operator=(const Client& obj)
 		this->creditMaxim = obj.creditMaxim;
 
 		//deep copy
-		for (int i = 0; i < this->nrVehiculeCumparate; i++) // eliberare memorie this
+		for (int i = 0; i < this->vehiculeCumparate.size(); i++) // eliberare memorie this
 		{
 			delete this->vehiculeCumparate[i];
 		}
 		this->vehiculeCumparate.clear();
 
 		this->nrVehiculeCumparate = obj.nrVehiculeCumparate;
-		for (int i = 0; i < this->nrVehiculeCumparate; i++)
+		for (int i = 0; i < obj.vehiculeCumparate.size(); i++)
 		{
 			this->vehiculeCumparate.push_back(obj.vehiculeCumparate[i]->virtualCopyConstructor());
 		}
@@ -766,9 +766,11 @@ ostream& operator <<(ostream& out, const Client& obj)
 {
 	out << "\nNume: " << obj.nume << endl;
 	cout << endl;
-	if (obj.nrVehiculeCumparate)
+	if (obj.vehiculeCumparate.size())
 		out << "Vehicule cumparate:\n\n" << endl;
-	for (int i = 0; i < obj.nrVehiculeCumparate; i++)
+	else
+		out << "Clientul nu are vehicule cumparate.\n";
+	for (int i = 0; i < /*obj.nrVehiculeCumparate*/obj.vehiculeCumparate.size(); i++)
 	{
 		out << "Vehiculul " << i + 1 << ":" << endl;
 		out << *obj.vehiculeCumparate[i] << endl;
@@ -985,7 +987,7 @@ ostream& operator <<(ostream& out, const Showroom& obj)
 	out << "\nNume showroom: " << obj.numeShowroom << endl;
 	out << "Adresa showroom: " << obj.adresa << endl;
 	cout << endl;
-	if (obj.nrVehiculeDisponibile)
+	if (obj.nrVehiculeDisponibile > 0)
 	{
 		out << "Vehicule disponibile:\n" << endl;
 		for (int i = 0; i < obj.nrVehiculeDisponibile; i++)
@@ -1045,8 +1047,8 @@ Showroom Showroom::operator-(int index)
 			throw 2;
 		}
         Showroom copie = *this;
-        delete copie.vehiculeDisponibile[index - 1];
-        copie.vehiculeDisponibile.erase(copie.vehiculeDisponibile.begin() + index - 1);
+        //delete copie.vehiculeDisponibile[index - 1];
+        copie.vehiculeDisponibile.erase(copie.vehiculeDisponibile.begin() + index /*- 1*/);
         copie.nrVehiculeDisponibile--;
         return copie;
 	}
@@ -1219,8 +1221,8 @@ istream& operator >>(istream& in, Tranzactie& obj)
 }
 ostream& operator <<(ostream& out, const Tranzactie& obj)
 {
-	out << "\nTranzactia cu id-ul " << obj.idTranzactie << ":\n\n";
-	out << "Clientul care face tranzactia:\n" << obj.client;
+	out << "\nID Tranzactie: " << obj.idTranzactie << "\n\n";
+	out << "Numele clientului: " << obj.client.getNume() <<"\n\n";
 	out << "Vehiculul cumparat:\n" << *obj.vehiculCumparat;
 	out << "Pret final: " << obj.pretFinal << endl;
 	out << "\nAvans: " << obj.avans << endl;
@@ -1291,8 +1293,8 @@ int main()
 	daciaSpringAndrei->setDisponibil(false);
 	daciaJoggerAlex->setDisponibil(false);
 
-	Client AndreiPopescu("Andrei Popescu", 2, { daciaLoganAndrei, daciaSpringAndrei }, 0, 20000);
-	Client AlexIonescu("Alex Ionescu", 1, { daciaJoggerAlex }, 0, 30000);
+	Client AndreiPopescu("Andrei Popescu", 2, { /*daciaLoganAndrei, daciaSpringAndrei*/ }, 0, 20000);
+	Client AlexIonescu("Alex Ionescu", 1, { /*daciaJoggerAlex*/ }, 0, 30000);
 	clienti.push_back(AndreiPopescu);
 	clienti.push_back(AlexIonescu);
 
@@ -1922,7 +1924,7 @@ int main()
 					{
 						for (int i = 0; i < clienti.size(); i++)
 						{
-							cout << "Clientul " << i + 1 << ":" << endl;
+							cout << "\nClientul " << i + 1 << ":" << endl;
 							cout << clienti[i] << endl;
 						}
 					}
@@ -2459,7 +2461,7 @@ int main()
 							else
 								okIntroducereIndex = 1;
 						}
-						cout << "\nCreditul maxim al clientului " << clienti[index - 1].getNume() << " este de " << clienti[index - 1].calculCreditScore() << " euro.\n";
+						cout << "\nCredit score-ul clientului " << clienti[index - 1].getNume() << " este " << clienti[index - 1].calculCreditScore() << ".\n";
 					}
 					break;
 				}
@@ -3109,7 +3111,7 @@ int main()
 						cout << endl;
 						for (int i = 0; i < tranzactii.size(); i++)
 						{
-							cout << "Tranzactia " << i + 1 << ":" << endl;
+							cout << "\nTranzactia " << i + 1 << ":" << endl;
 							cout << tranzactii[i] << endl;
 						}
 					}
@@ -3150,8 +3152,11 @@ int main()
 						}
 						if (introducereAnulare == 0 && tranzactii.size() != 0)
 						{
-							tranzactii[0].setNrTranzactii(tranzactii[0].getNrTranzactii() - 1);
 							tranzactii.erase(tranzactii.begin() + index - 1);
+							if (tranzactii.size() != 0)
+							{
+								tranzactii[0].setNrTranzactii(tranzactii[0].getNrTranzactii() - 1);
+							}
 							if (tranzactii.size() == 0)
 							{
 								cout << "\nTranzactia a fost stearsa cu succes.\nNu mai exista tranzactii inregistrate.\n";
@@ -3598,7 +3603,7 @@ int main()
 			int ramaiInProgram = 1;
 			while (ramaiInProgram)
 			{
-				Tranzactie t;
+				
 				
 				if (clienti.size() == 0)
 				{
@@ -3653,23 +3658,48 @@ int main()
 					}
 				}
 				cout << "Ati ales clientul " << indexClient << ".\n\n";
-				cout << "Introduceti index-ul showroom-ului din care doriti sa cumparati un vehicul.\nAveti lista cu showroom-uri mai sus.\n\n" << "> ";
+				cout << "Introduceti index-ul showroom-ului din care doriti sa cumparati un vehicul.\nAveti lista cu showroom-uri mai sus.\n\n";
 				int indexShowroom;
+				int okShowroomGol = 0;
 				int okCitireIndexShowroom = 0;
 				while (okCitireIndexShowroom == 0)
 				{
+					cout << "> ";
 					cin >> indexShowroom;
+
 					if (indexShowroom < 1 || indexShowroom > showroomuri.size())
 					{
 						cout << "\nIndex invalid.\nTrebuie sa introduceti un index din intervalul [1," << showroomuri.size() << "].\n" << "\n> ";
 					}
 					else
-					{
-						cout << "\nAti ales showroom-ul " << indexShowroom << ".\n";
-						okCitireIndexShowroom = 1;
-					}
-				}
+						if (showroomuri[indexShowroom - 1].getNrVehiculeDisponibile() == 0)
+						{
+							cout << "\nShowroom-ul ales nu are vehicule disponibile.\n";
+							cout << "\n1. Anulare tranzactie.\n";
+							cout << "2. Reintroducere index showroom.\n\n";
+							int comandaDisponibilitate;
+							cout << "\n> ";
+							cin >> comandaDisponibilitate;
+							if (comandaDisponibilitate == 1)
+							{
+								cout << "\nTranzactia a fost anulata.\n";
+								ramaiInProgram = 0;
+								okShowroomGol = 1;
+								break;
+							}
+						}
 
+						else
+						{
+							cout << "\nAti ales showroom-ul " << indexShowroom << ".\n";
+							okCitireIndexShowroom = 1;
+						}
+				}
+				if (okShowroomGol == 1)
+				{
+					okShowroomGol = 0;
+					break;
+				}
 				cout << "\n\n// ------------------------------------------------------------------------------------------------------------------ //\n\n";
 				int afisatVehicule = 0;
 				if (afisatVehicule == 0)
@@ -3777,6 +3807,7 @@ int main()
 								// mut declararea lui t in afara 
 								//t(clienti[indexClient - 1], vehiculCumparat, pretFinal, avans, credit);
 								//Tranzactie t(clienti[indexClient - 1], vehiculCumparat, pretFinal, avans, credit);
+								Tranzactie t;
 								t.setClient(clienti[indexClient - 1]);
 								t.setVehiculCumparat(vehiculCumparat);
 								t.setPretFinal(pretFinal);
@@ -3788,8 +3819,8 @@ int main()
 								clienti[indexClient - 1].setPlataRamasa(clienti[indexClient - 1].getPlataRamasa() + credit); // se adauga creditul la plata ramasa a clientului
 								clienti[indexClient - 1] = clienti[indexClient - 1] + vehiculCumparat; // atribuire a vehiculului in baza de date
 								
-								showroomuri[indexShowroom - 1] = showroomuri[indexShowroom - 1] - indexVehicul - 1; // stergere vehicul din showroom
-								showroomuri[indexShowroom - 1].setNrVehiculeDisponibile(showroomuri[indexShowroom - 1].getNrVehiculeDisponibile() - 1); // scadere numar vehicule disponibile in showroom
+								showroomuri[indexShowroom - 1] = showroomuri[indexShowroom - 1] - (indexVehicul - 1); // stergere vehicul din showroom
+								//showroomuri[indexShowroom - 1].setNrVehiculeDisponibile(showroomuri[indexShowroom - 1].getNrVehiculeDisponibile() - 1); // scadere numar vehicule disponibile in showroom
 							
 								
 
@@ -3825,7 +3856,4 @@ int main()
 	}
 	return 0;
 }
-// probleme se sterge tot dupa ce fac o tranzactie,
-// cand se afiseaza tranzactiile nu vreau sa se afiseze si ce vehicule a mai cumparat clientul 
-// nu se verifica la generarea tranzactiei daca index ul showroom ului introdus are masini
 
