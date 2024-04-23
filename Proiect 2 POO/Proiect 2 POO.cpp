@@ -149,7 +149,6 @@ ostream& operator <<(ostream& out, const Vehicul& obj) { return obj.afisareVehic
 double Vehicul::valoareaRealaVehicul() const
 {
 	int vechime = 2024 - anFabricatie;
-	// double indiceVechime = pow(0.90, vechime); // in fiecare an scade cu 10%, si ramane in (0,1)
 	double indiceVechime = 1 - (0.1 * vechime);
 	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
 	if (pret * indiceVechime * indiceMarca > pret)
@@ -217,8 +216,8 @@ public:
 	// OPERATORII >> SI <<
 	friend istream& operator >>(istream&, VehiculCarburant&);
 	friend ostream& operator <<(ostream&, const VehiculCarburant&); // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
-	istream& citireVehicul(istream& in) override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
-	ostream& afisareVehicul(ostream& out) const override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
+	istream& citireVehicul(istream& in) override;
+	ostream& afisareVehicul(ostream& out) const override;
 
 	// FUNCTIE VALOAREA REALA VEHICUL
 	double valoareaRealaVehicul() const override;
@@ -281,7 +280,6 @@ ostream& operator <<(ostream& out, const VehiculCarburant& obj) { return obj.afi
 double VehiculCarburant::valoareaRealaVehicul() const
 {
 	int vechime = 2024 - anFabricatie;
-	// double indiceVechime = pow(0.90, vechime); // in fiecare an scade cu 10%, si ramane in (0,1)
 	double indiceVechime = 1 - (0.1 * vechime);
 	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
 	double indiceConsum = consum < 5 ? 1.1 : 1.0;
@@ -346,8 +344,8 @@ public:
 	// OPERATORII >> SI <<
 	friend istream& operator >>(istream&, VehiculElectric&);
 	friend ostream& operator <<(ostream&, const VehiculElectric&); // trebuie const pt ca out este const in functia cealalta cu return obj.afisare(out)
-	istream& citireVehicul(istream& in) override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
-	ostream& afisareVehicul(ostream& out) const override; // virtuale ca sa pot apela cu pointeri la clasa de baza (?)
+	istream& citireVehicul(istream& in) override;
+	ostream& afisareVehicul(ostream& out) const override;
 
 	// FUNCTIE VALOAREA REALA VEHICUL
 	double valoareaRealaVehicul() const override;
@@ -410,7 +408,6 @@ ostream& operator <<(ostream& out, const VehiculElectric& obj) { return obj.afis
 double VehiculElectric::valoareaRealaVehicul() const
 {
 	int vechime = 2024 - anFabricatie;
-	// double indiceVechime = pow(0.90, vechime); // in fiecare an scade cu 10%, si ramane in (0,1)
 	double indiceVechime = 1 - (0.1 * vechime);
 	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
 	double indiceAutonomie = autonomieKm > 500 ? 1.1 : 1.0;
@@ -508,8 +505,6 @@ VehiculHibrid& VehiculHibrid::operator=(const VehiculHibrid& obj)
 istream& VehiculHibrid::citireVehicul(istream& in)
 {
 	VehiculCarburant::citireVehicul(in);
-
-	/*VehiculElectric::citireVehicul(in);*/ // altfel se citeste de 2 ori
 	cout << "Autonomie in KM: ";
 	in >> autonomieKm;
 	cout << "Timp incarcare: ";
@@ -523,8 +518,6 @@ istream& operator >>(istream& in, VehiculHibrid& obj) { return obj.citireVehicul
 ostream& VehiculHibrid::afisareVehicul(ostream& out) const
 {
 	VehiculCarburant::afisareVehicul(out);
-
-	/*VehiculElectric::afisareVehicul(out);*/ // altfel se citeste de 2 ori
 	out << "Autonomie in KM: " << autonomieKm << endl;
 	out << "Timp incarcare: " << timpIncarcare << endl;
 
@@ -537,7 +530,6 @@ ostream& operator <<(ostream& out, const VehiculHibrid& obj) { return obj.afisar
 double VehiculHibrid::valoareaRealaVehicul() const
 {
 	int vechime = 2024 - anFabricatie;
-	// double indiceVechime = pow(0.90, vechime); // in fiecare an scade cu 10%, si ramane in (0,1)
 	double indiceVechime = 1 - (0.1 * vechime);
 	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
 	double indiceConsum = consum < 5 ? 1.1 : 1.0;
@@ -649,14 +641,7 @@ Client::Client(string nume, int nrVehiculeCumparate, vector<Vehicul*> vehiculeCu
 Client::Client(const Client& obj) : nume(obj.nume), plataRamasa(obj.plataRamasa), creditMaxim(obj.creditMaxim)
 {
 	// deep copy
-	/*cout << endl;
-	cout << "Nume this " << this->getNume() << endl;
-	cout << "Nume obj " << obj.getNume() << endl;
-	cout << "Nr vehicule this " << this->getNrVehiculeCumparate() << "*" << endl;
-	cout << "Nr vehicule obj " << obj.getNrVehiculeCumparate() << "*" << endl;
-	cout << "this->vehiculeCumparate.size() " << this->vehiculeCumparate.size() << endl;
-	cout << "obj.vehiculeCumparate.size() " << obj.vehiculeCumparate.size() << endl;
-	cout << endl;*/
+
 	for (int i = 0; i < this->vehiculeCumparate.size(); i++) // eliberare memorie this
 	{
 		delete this->vehiculeCumparate[i];
@@ -680,6 +665,7 @@ Client& Client::operator=(const Client& obj)
 		this->creditMaxim = obj.creditMaxim;
 
 		//deep copy
+
 		for (int i = 0; i < this->vehiculeCumparate.size(); i++) // eliberare memorie this
 		{
 			delete this->vehiculeCumparate[i];
@@ -719,7 +705,7 @@ istream& operator >>(istream& in, Client& obj)
 		cout << endl;
 		if (tipMotor == 'C')
 		{
-			Vehicul/*Carburant*/* v = new VehiculCarburant();
+			Vehicul* v = new VehiculCarburant();
 			in >> *v;
 			if (v->getDisponibil() == true)
 			{
@@ -730,7 +716,7 @@ istream& operator >>(istream& in, Client& obj)
 		}
 		else if (tipMotor == 'E')
 		{
-			Vehicul/*Electric*/* v = new VehiculElectric();
+			Vehicul* v = new VehiculElectric();
 			in >> *v;
 			if (v->getDisponibil() == true)
 			{
@@ -741,7 +727,7 @@ istream& operator >>(istream& in, Client& obj)
 		}
 		else if (tipMotor == 'H')
 		{
-			Vehicul/*Hibrid*/* v = new VehiculHibrid();
+			Vehicul* v = new VehiculHibrid();
 			in >> *v;
 			if (v->getDisponibil() == true)
 			{
@@ -770,7 +756,7 @@ ostream& operator <<(ostream& out, const Client& obj)
 		out << "Vehicule cumparate:\n\n" << endl;
 	else
 		out << "Clientul nu are vehicule cumparate.\n";
-	for (int i = 0; i < /*obj.nrVehiculeCumparate*/obj.vehiculeCumparate.size(); i++)
+	for (int i = 0; i < obj.vehiculeCumparate.size(); i++)
 	{
 		out << "Vehiculul " << i + 1 << ":" << endl;
 		out << *obj.vehiculeCumparate[i] << endl;
@@ -924,7 +910,7 @@ Showroom& Showroom::operator=(const Showroom& obj)
 		this->vehiculeDisponibile.clear();
 
 		this->nrVehiculeDisponibile = obj.nrVehiculeDisponibile;
-		for (int i = 0; i < this->nrVehiculeDisponibile; i++)
+		for (int i = 0; i < obj.vehiculeDisponibile.size(); i++)
 		{
 			this->vehiculeDisponibile.push_back(obj.vehiculeDisponibile[i]->virtualCopyConstructor());
 		}
@@ -958,19 +944,19 @@ istream& operator >>(istream& in, Showroom& obj)
 		cout << endl;
 		if (tipMotor == 'C')
 		{
-			Vehicul/*Carburant*/* v = new VehiculCarburant();
+			Vehicul* v = new VehiculCarburant();
 			in >> *v;
 			obj.vehiculeDisponibile.push_back(v);
 		}
 		else if (tipMotor == 'E')
 		{
-			Vehicul/*Electric*/* v = new VehiculElectric();
+			Vehicul* v = new VehiculElectric();
 			in >> *v;
 			obj.vehiculeDisponibile.push_back(v);
 		}
 		else if (tipMotor == 'H')
 		{
-			Vehicul/*Hibrid*/* v = new VehiculHibrid();
+			Vehicul* v = new VehiculHibrid();
 			in >> *v;
 			obj.vehiculeDisponibile.push_back(v);
 		}
@@ -987,10 +973,10 @@ ostream& operator <<(ostream& out, const Showroom& obj)
 	out << "\nNume showroom: " << obj.numeShowroom << endl;
 	out << "Adresa showroom: " << obj.adresa << endl;
 	cout << endl;
-	if (obj.nrVehiculeDisponibile > 0)
+	if (obj.vehiculeDisponibile.size() > 0)
 	{
 		out << "Vehicule disponibile:\n" << endl;
-		for (int i = 0; i < obj.nrVehiculeDisponibile; i++)
+		for (int i = 0; i < obj.vehiculeDisponibile.size(); i++)
 		{
 			out << "Vehiculul " << i + 1 << ":" << endl;
 			out << *obj.vehiculeDisponibile[i] << endl;
@@ -1046,11 +1032,11 @@ Showroom Showroom::operator-(int index)
 		{
 			throw 2;
 		}
-        Showroom copie = *this;
-        //delete copie.vehiculeDisponibile[index - 1];
-        copie.vehiculeDisponibile.erase(copie.vehiculeDisponibile.begin() + index /*- 1*/);
-        copie.nrVehiculeDisponibile--;
-        return copie;
+		Showroom copie = *this;
+		delete copie.vehiculeDisponibile[index];
+		copie.vehiculeDisponibile.erase(copie.vehiculeDisponibile.begin() + index);
+		copie.nrVehiculeDisponibile--;
+		return copie;
 	}
 	catch (int var)
 	{
@@ -1190,19 +1176,19 @@ istream& operator >>(istream& in, Tranzactie& obj)
 	cout << endl;
 	if (tipMotor == 'C')
 	{
-		Vehicul/*Carburant*/* v = new VehiculCarburant();
+		Vehicul* v = new VehiculCarburant();
 		in >> *v;
 		obj.vehiculCumparat = v;
 	}
 	else if (tipMotor == 'E')
 	{
-		Vehicul/*Electric*/* v = new VehiculElectric();
+		Vehicul* v = new VehiculElectric();
 		in >> *v;
 		obj.vehiculCumparat = v;
 	}
 	else if (tipMotor == 'H')
 	{
-		Vehicul/*Hibrid*/* v = new VehiculHibrid();
+		Vehicul* v = new VehiculHibrid();
 		in >> *v;
 		obj.vehiculCumparat = v;
 	}
@@ -1222,7 +1208,7 @@ istream& operator >>(istream& in, Tranzactie& obj)
 ostream& operator <<(ostream& out, const Tranzactie& obj)
 {
 	out << "\nID Tranzactie: " << obj.idTranzactie << "\n\n";
-	out << "Numele clientului: " << obj.client.getNume() <<"\n\n";
+	out << "Numele clientului: " << obj.client.getNume() << "\n\n";
 	out << "Vehiculul cumparat:\n" << *obj.vehiculCumparat;
 	out << "Pret final: " << obj.pretFinal << endl;
 	out << "\nAvans: " << obj.avans << endl;
@@ -1268,7 +1254,7 @@ void Tranzactie::setVehiculCumparat(Vehicul* vehiculCumparat) { this->vehiculCum
 
 int Tranzactie::nrTranzactii = 0;
 
-Vehicul* vehiculCumparat = nullptr; // UN POINTER PT TRANZACTIE
+Vehicul* vehiculCumparat = nullptr; // UN POINTER PT GENERARE TRANZACTIE
 
 int main()
 {
@@ -1307,7 +1293,9 @@ int main()
 	Showroom showroomDaciaBucuresti("Showroom Dacia Bucuresti", "Bucuresti", 3, { daciaLoganShowroomBucuresti, daciaSpringShowroomBucuresti, daciaJoggerShowroomBucuresti });
 	Showroom showroomDaciaCluj("Showroom Dacia Cluj", "Cluj", 2, { daciaLoganShowroomCluj, daciaJoggerShowroomCluj });
 	showroomuri.push_back(showroomDaciaBucuresti);
-	showroomuri.push_back(showroomDaciaCluj); 
+	showroomuri.push_back(showroomDaciaCluj);
+	showroomDaciaBucuresti.setNrVehiculeDisponibile(3);
+	showroomDaciaCluj.setNrVehiculeDisponibile(2);
 
 	//Vehicul* daciaLoganTranzactie1 = daciaLogan->virtualCopyConstructor();
 	//Vehicul* daciaSpringTranzactie2 = daciaSpring->virtualCopyConstructor();
@@ -1560,25 +1548,21 @@ int main()
 									}
 									case 6:
 									{
-										// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 										double consumNou;
 										cout << "Introduceti noul consum: ";
 										cin >> consumNou;
-										VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); // VERIFICARE
+										VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]);
 										vehiculCarburant->setConsum(consumNou);
-										//vehicule[index - 1]->setConsum(consumNou);
 										cout << "\nConsumul a fost modificat cu succes.\n";
 										break;
 									}
 									case 7:
 									{
-										// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 										string tipCarburantNou;
 										cout << "Introduceti noul tip de carburant: ";
 										cin >> tipCarburantNou;
-										VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); // VERIFICARE
+										VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); 
 										vehiculCarburant->setTipCarburant(tipCarburantNou);
-										//vehicule[index - 1]->setTipCarburant(tipCarburantNou);
 										cout << "\nTipul de carburant a fost modificat cu succes.\n";
 										break;
 									}
@@ -1651,25 +1635,21 @@ int main()
 										}
 										case 6:
 										{
-											// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 											double autonomieNoua;
 											cout << "Introduceti noua autonomie: ";
 											cin >> autonomieNoua;
-											VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); // VERIFICARE
+											VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); 
 											vehiculElectric->setAutonomieKm(autonomieNoua);
-											//vehicule[index - 1]->setAutonomieKm(autonomieNoua);
 											cout << "\nAutonomia a fost modificata cu succes.\n";
 											break;
 										}
 										case 7:
 										{
-											// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 											double timpIncarcareNou;
 											cout << "Introduceti noul timp de incarcare: ";
 											cin >> timpIncarcareNou;
-											VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); // VERIFICARE
+											VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); 
 											vehiculElectric->setTimpIncarcare(timpIncarcareNou);
-											//vehicule[index - 1]->setTimpIncarcare(timpIncarcareNou);
 											cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 											break;
 										}
@@ -1749,9 +1729,8 @@ int main()
 												double consumNou;
 												cout << "Introduceti noul consum: ";
 												cin >> consumNou;
-												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); // VERIFICARE
+												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]);
 												vehiculCarburant->setConsum(consumNou);
-												//vehicule[index - 1]->setConsum(consumNou);
 												cout << "\nConsumul a fost modificat cu succes.\n";
 												break;
 											}
@@ -1760,9 +1739,8 @@ int main()
 												string tipCarburantNou;
 												cout << "Introduceti noul tip de carburant: ";
 												cin >> tipCarburantNou;
-												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); // VERIFICARE
+												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); 
 												vehiculCarburant->setTipCarburant(tipCarburantNou);
-												//vehicule[index - 1]->setTipCarburant(tipCarburantNou);
 												cout << "\nTipul de carburant a fost modificat cu succes.\n";
 												break;
 											}
@@ -1771,9 +1749,8 @@ int main()
 												double autonomieNoua;
 												cout << "Introduceti noua autonomie: ";
 												cin >> autonomieNoua;
-												VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); // VERIFICARE
+												VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); 
 												vehiculElectric->setAutonomieKm(autonomieNoua);
-												//vehicule[index - 1]->setAutonomieKm(autonomieNoua);
 												cout << "\nAutonomia a fost modificata cu succes.\n";
 												break;
 											}
@@ -1782,9 +1759,8 @@ int main()
 												double timpIncarcareNou;
 												cout << "Introduceti noul timp de incarcare: ";
 												cin >> timpIncarcareNou;
-												VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); // VERIFICARE
+												VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]);
 												vehiculElectric->setTimpIncarcare(timpIncarcareNou);
-												//vehicule[index - 1]->setTimpIncarcare(timpIncarcareNou);
 												cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 												break;
 											}
@@ -1798,9 +1774,8 @@ int main()
 													cin >> tipHibridNou;
 													if (tipHibridNou == 'M' || tipHibridNou == 'F' || tipHibridNou == 'P')
 													{
-														VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(vehicule[index - 1]); // VERIFICARE
+														VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(vehicule[index - 1]); 
 														vehiculHibrid->setTipHibrid(tipHibridNou);
-														//vehicule[index - 1]->setTipHibrid(tipHibridNou);
 														cout << "\nTipul de hibrid a fost modificat cu succes.\n";
 														introducereCorecta = 1;
 													}
@@ -2134,25 +2109,21 @@ int main()
 													}
 													case 6:
 													{
-														// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 														double consumNou;
 														cout << "Introduceti noul consum: ";
 														cin >> consumNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); // VERIFICARE
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
 														vehiculCarburant->setConsum(consumNou);
-														//vehicule[index - 1]->setConsum(consumNou);
 														cout << "\nConsumul a fost modificat cu succes.\n";
 														break;
 													}
 													case 7:
 													{
-														// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 														string tipCarburantNou;
 														cout << "Introduceti noul tip de carburant: ";
 														cin >> tipCarburantNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); // VERIFICARE
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
 														vehiculCarburant->setTipCarburant(tipCarburantNou);
-														//vehicule[index - 1]->setTipCarburant(tipCarburantNou);
 														cout << "\nTipul de carburant a fost modificat cu succes.\n";
 														break;
 													}
@@ -2226,25 +2197,21 @@ int main()
 														}
 														case 6:
 														{
-															// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 															double autonomieNoua;
 															cout << "Introduceti noua autonomie: ";
 															cin >> autonomieNoua;
-															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); // VERIFICARE
+															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
 															vehiculElectric->setAutonomieKm(autonomieNoua);
-															//vehicule[index - 1]->setAutonomieKm(autonomieNoua);
 															cout << "\nAutonomia a fost modificata cu succes.\n";
 															break;
 														}
 														case 7:
 														{
-															// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 															double timpIncarcareNou;
 															cout << "Introduceti noul timp de incarcare: ";
 															cin >> timpIncarcareNou;
-															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); // VERIFICARE
+															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
 															vehiculElectric->setTimpIncarcare(timpIncarcareNou);
-															//vehicule[index - 1]->setTimpIncarcare(timpIncarcareNou);
 															cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 															break;
 														}
@@ -2325,9 +2292,8 @@ int main()
 																double consumNou;
 																cout << "Introduceti noul consum: ";
 																cin >> consumNou;
-																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); // VERIFICARE
+																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
 																vehiculCarburant->setConsum(consumNou);
-																//vehicule[index - 1]->setConsum(consumNou);
 																cout << "\nConsumul a fost modificat cu succes.\n";
 																break;
 															}
@@ -2336,9 +2302,8 @@ int main()
 																string tipCarburantNou;
 																cout << "Introduceti noul tip de carburant: ";
 																cin >> tipCarburantNou;
-																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); // VERIFICARE
+																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
 																vehiculCarburant->setTipCarburant(tipCarburantNou);
-																//vehicule[index - 1]->setTipCarburant(tipCarburantNou);
 																cout << "\nTipul de carburant a fost modificat cu succes.\n";
 																break;
 															}
@@ -2347,9 +2312,8 @@ int main()
 																double autonomieNoua;
 																cout << "Introduceti noua autonomie: ";
 																cin >> autonomieNoua;
-																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); // VERIFICARE
+																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]);
 																vehiculElectric->setAutonomieKm(autonomieNoua);
-																//vehicule[index - 1]->setAutonomieKm(autonomieNoua);
 																cout << "\nAutonomia a fost modificata cu succes.\n";
 																break;
 															}
@@ -2358,9 +2322,8 @@ int main()
 																double timpIncarcareNou;
 																cout << "Introduceti noul timp de incarcare: ";
 																cin >> timpIncarcareNou;
-																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); // VERIFICARE
+																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
 																vehiculElectric->setTimpIncarcare(timpIncarcareNou);
-																//vehicule[index - 1]->setTimpIncarcare(timpIncarcareNou);
 																cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 																break;
 															}
@@ -2374,9 +2337,8 @@ int main()
 																	cin >> tipHibridNou;
 																	if (tipHibridNou == 'M' || tipHibridNou == 'F' || tipHibridNou == 'P')
 																	{
-																		VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); // VERIFICARE
+																		VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
 																		vehiculHibrid->setTipHibrid(tipHibridNou);
-																		//vehicule[index - 1]->setTipHibrid(tipHibridNou);
 																		cout << "\nTipul de hibrid a fost modificat cu succes.\n";
 																		introducereCorecta = 1;
 																	}
@@ -2470,6 +2432,7 @@ int main()
 					ramaiInClient = 0;
 					break;
 				}
+
 				}
 			}
 			break;
@@ -2730,25 +2693,21 @@ int main()
 													}
 													case 6:
 													{
-														// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 														double consumNou;
 														cout << "Introduceti noul consum: ";
 														cin >> consumNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); // VERIFICARE
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
 														vehiculCarburant->setConsum(consumNou);
-														//vehicule[index - 1]->setConsum(consumNou);
 														cout << "\nConsumul a fost modificat cu succes.\n";
 														break;
 													}
 													case 7:
 													{
-														// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 														string tipCarburantNou;
 														cout << "Introduceti noul tip de carburant: ";
 														cin >> tipCarburantNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); // VERIFICARE
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
 														vehiculCarburant->setTipCarburant(tipCarburantNou);
-														//vehicule[index - 1]->setTipCarburant(tipCarburantNou);
 														cout << "\nTipul de carburant a fost modificat cu succes.\n";
 														break;
 													}
@@ -2820,25 +2779,21 @@ int main()
 														}
 														case 6:
 														{
-															// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 															double autonomieNoua;
 															cout << "Introduceti noua autonomie: ";
 															cin >> autonomieNoua;
-															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); // VERIFICARE
+															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
 															vehiculElectric->setAutonomieKm(autonomieNoua);
-															//vehicule[index - 1]->setAutonomieKm(autonomieNoua);
 															cout << "\nAutonomia a fost modificata cu succes.\n";
 															break;
 														}
 														case 7:
 														{
-															// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 															double timpIncarcareNou;
 															cout << "Introduceti noul timp de incarcare: ";
 															cin >> timpIncarcareNou;
-															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); // VERIFICARE
+															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
 															vehiculElectric->setTimpIncarcare(timpIncarcareNou);
-															//vehicule[index - 1]->setTimpIncarcare(timpIncarcareNou);
 															cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 															break;
 														}
@@ -2919,9 +2874,8 @@ int main()
 																double consumNou;
 																cout << "Introduceti noul consum: ";
 																cin >> consumNou;
-																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); // VERIFICARE
+																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
 																vehiculCarburant->setConsum(consumNou);
-																//vehicule[index - 1]->setConsum(consumNou);
 																cout << "\nConsumul a fost modificat cu succes.\n";
 																break;
 															}
@@ -2930,9 +2884,8 @@ int main()
 																string tipCarburantNou;
 																cout << "Introduceti noul tip de carburant: ";
 																cin >> tipCarburantNou;
-																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); // VERIFICARE
+																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
 																vehiculCarburant->setTipCarburant(tipCarburantNou);
-																//vehicule[index - 1]->setTipCarburant(tipCarburantNou);
 																cout << "\nTipul de carburant a fost modificat cu succes.\n";
 																break;
 															}
@@ -2941,9 +2894,8 @@ int main()
 																double autonomieNoua;
 																cout << "Introduceti noua autonomie: ";
 																cin >> autonomieNoua;
-																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); // VERIFICARE
+																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
 																vehiculElectric->setAutonomieKm(autonomieNoua);
-																//vehicule[index - 1]->setAutonomieKm(autonomieNoua);
 																cout << "\nAutonomia a fost modificata cu succes.\n";
 																break;
 															}
@@ -2952,9 +2904,8 @@ int main()
 																double timpIncarcareNou;
 																cout << "Introduceti noul timp de incarcare: ";
 																cin >> timpIncarcareNou;
-																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); // VERIFICARE
+																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
 																vehiculElectric->setTimpIncarcare(timpIncarcareNou);
-																//vehicule[index - 1]->setTimpIncarcare(timpIncarcareNou);
 																cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 																break;
 															}
@@ -2968,9 +2919,8 @@ int main()
 																	cin >> tipHibridNou;
 																	if (tipHibridNou == 'M' || tipHibridNou == 'F' || tipHibridNou == 'P')
 																	{
-																		VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); // VERIFICARE
+																		VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
 																		vehiculHibrid->setTipHibrid(tipHibridNou);
-																		//vehicule[index - 1]->setTipHibrid(tipHibridNou);
 																		cout << "\nTipul de hibrid a fost modificat cu succes.\n";
 																		introducereCorecta = 1;
 																	}
@@ -3286,25 +3236,21 @@ int main()
 											}
 											case 6:
 											{
-												// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 												double consumNou;
 												cout << "Introduceti noul consum: ";
 												cin >> consumNou;
-												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou); // VERIFICARE
+												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou); 
 												vehiculCarburant->setConsum(consumNou);
-												//vehicule[index - 1]->setConsum(consumNou);
 												cout << "\nConsumul a fost modificat cu succes.\n";
 												break;
 											}
 											case 7:
 											{
-												// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 												string tipCarburantNou;
 												cout << "Introduceti noul tip de carburant: ";
 												cin >> tipCarburantNou;
-												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou); // VERIFICARE
+												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou);
 												vehiculCarburant->setTipCarburant(tipCarburantNou);
-												//vehicule[index - 1]->setTipCarburant(tipCarburantNou);
 												cout << "\nTipul de carburant a fost modificat cu succes.\n";
 												break;
 											}
@@ -3377,25 +3323,21 @@ int main()
 												}
 												case 6:
 												{
-													// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 													double autonomieNoua;
 													cout << "Introduceti noua autonomie: ";
 													cin >> autonomieNoua;
-													VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou); // VERIFICARE
+													VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou); 
 													vehiculElectric->setAutonomieKm(autonomieNoua);
-													//vehicule[index - 1]->setAutonomieKm(autonomieNoua);
 													cout << "\nAutonomia a fost modificata cu succes.\n";
 													break;
 												}
 												case 7:
 												{
-													// FUNCTIA EXISTA DOAR IN CLASA DERIVATA, DECI TREBUIE CAST
 													double timpIncarcareNou;
 													cout << "Introduceti noul timp de incarcare: ";
 													cin >> timpIncarcareNou;
-													VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou); // VERIFICARE
+													VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou); 
 													vehiculElectric->setTimpIncarcare(timpIncarcareNou);
-													//vehicule[index - 1]->setTimpIncarcare(timpIncarcareNou);
 													cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 													break;
 												}
@@ -3473,9 +3415,8 @@ int main()
 														double consumNou;
 														cout << "Introduceti noul consum: ";
 														cin >> consumNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou); // VERIFICARE
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou); 
 														vehiculCarburant->setConsum(consumNou);
-														//vehicule[index - 1]->setConsum(consumNou);
 														cout << "\nConsumul a fost modificat cu succes.\n";
 														break;
 													}
@@ -3484,9 +3425,8 @@ int main()
 														string tipCarburantNou;
 														cout << "Introduceti noul tip de carburant: ";
 														cin >> tipCarburantNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou); // VERIFICARE
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou); 
 														vehiculCarburant->setTipCarburant(tipCarburantNou);
-														//vehicule[index - 1]->setTipCarburant(tipCarburantNou);
 														cout << "\nTipul de carburant a fost modificat cu succes.\n";
 														break;
 													}
@@ -3495,9 +3435,8 @@ int main()
 														double autonomieNoua;
 														cout << "Introduceti noua autonomie: ";
 														cin >> autonomieNoua;
-														VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou); // VERIFICARE
+														VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou);
 														vehiculElectric->setAutonomieKm(autonomieNoua);
-														//vehicule[index - 1]->setAutonomieKm(autonomieNoua);
 														cout << "\nAutonomia a fost modificata cu succes.\n";
 														break;
 													}
@@ -3506,9 +3445,8 @@ int main()
 														double timpIncarcareNou;
 														cout << "Introduceti noul timp de incarcare: ";
 														cin >> timpIncarcareNou;
-														VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou); // VERIFICARE
+														VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou); 
 														vehiculElectric->setTimpIncarcare(timpIncarcareNou);
-														//vehicule[index - 1]->setTimpIncarcare(timpIncarcareNou);
 														cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 														break;
 													}
@@ -3522,9 +3460,8 @@ int main()
 															cin >> tipHibridNou;
 															if (tipHibridNou == 'M' || tipHibridNou == 'F' || tipHibridNou == 'P')
 															{
-																VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(vehiculNou); // VERIFICARE
+																VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(vehiculNou);
 																vehiculHibrid->setTipHibrid(tipHibridNou);
-																//vehicule[index - 1]->setTipHibrid(tipHibridNou);
 																cout << "\nTipul de hibrid a fost modificat cu succes.\n";
 																introducereCorecta = 1;
 															}
@@ -3599,12 +3536,12 @@ int main()
 		}
 		case 5:
 		{
-			
+
 			int ramaiInProgram = 1;
 			while (ramaiInProgram)
 			{
-				
-				
+
+
 				if (clienti.size() == 0)
 				{
 					cout << "\nNu exista clienti inregistrati, deci nu se poate genera o tranzactie.\n";
@@ -3714,7 +3651,7 @@ int main()
 				}
 				cout << "Ati ales showroom-ul " << indexShowroom << ".\n\n";
 				cout << "Introduceti index-ul vehiculului pe care doriti sa il cumparati.\nAveti lista cu vehiculele din showroom-ul selectat mai sus.\n\n";
-				
+
 				int anulareDinCitireIndexVehicul = 0;
 				int indexVehicul;
 				int okCitireIndexVehicul = 0;
@@ -3783,54 +3720,51 @@ int main()
 							}
 						}
 						else
-						if (credit > clienti[indexClient - 1].getCreditMaxim())
-						{
-							cout << "\n\nCreditul depaseste creditul maxim al clientului.";
-							cout << "\n\n1. Anulare tranzactie.\n";
-							cout << "2. Reintroducere date pentru pret final, avans si credit.\n\n";
-							int comandaCredit;
-							cout << "\n> ";
-							cin >> comandaCredit;
-							if (comandaCredit == 1)
+							if (credit > clienti[indexClient - 1].getCreditMaxim())
 							{
-								cout << "\nTranzactia a fost anulata.\n";
-								break;
-							}
-						}
-						else
-							if (pretFinal == avans + credit)
-							{
-                                
-                                vehiculCumparat = showroomuri[indexShowroom - 1].getVehiculeDisponibile()[indexVehicul - 1]->virtualCopyConstructor();
-                                vehiculCumparat->setDisponibil(0); // vehiculul cumparat devine indisponibil
-								
-								// mut declararea lui t in afara 
-								//t(clienti[indexClient - 1], vehiculCumparat, pretFinal, avans, credit);
-								//Tranzactie t(clienti[indexClient - 1], vehiculCumparat, pretFinal, avans, credit);
-								Tranzactie t;
-								t.setClient(clienti[indexClient - 1]);
-								t.setVehiculCumparat(vehiculCumparat);
-								t.setPretFinal(pretFinal);
-								t.setAvans(avans);
-								t.setCredit(credit);
-
-								tranzactii.push_back(t);
-
-								clienti[indexClient - 1].setPlataRamasa(clienti[indexClient - 1].getPlataRamasa() + credit); // se adauga creditul la plata ramasa a clientului
-								clienti[indexClient - 1] = clienti[indexClient - 1] + vehiculCumparat; // atribuire a vehiculului in baza de date
-								
-								showroomuri[indexShowroom - 1] = showroomuri[indexShowroom - 1] - (indexVehicul - 1); // stergere vehicul din showroom
-								//showroomuri[indexShowroom - 1].setNrVehiculeDisponibile(showroomuri[indexShowroom - 1].getNrVehiculeDisponibile() - 1); // scadere numar vehicule disponibile in showroom
-							
-								
-
-								cout << "\nTranzactia a fost generata cu succes.\n";
-								cout << "ID Tranzactie: " << tranzactii.back().getIdTranzactie() << ".\n";
-								okPretFinal = 1;
-								ramaiInProgram  = 0;
+								cout << "\n\nCreditul depaseste creditul maxim al clientului.";
+								cout << "\n\n1. Anulare tranzactie.\n";
+								cout << "2. Reintroducere date pentru pret final, avans si credit.\n\n";
+								int comandaCredit;
+								cout << "\n> ";
+								cin >> comandaCredit;
+								if (comandaCredit == 1)
+								{
+									cout << "\nTranzactia a fost anulata.\n";
+									break;
+								}
 							}
 							else
-								cout << "\n\nPretul final trebuie sa fie egal cu suma dintre avans si credit.\n\n";
+								if (pretFinal == avans + credit)
+								{
+
+									vehiculCumparat = showroomuri[indexShowroom - 1].getVehiculeDisponibile()[indexVehicul - 1]->virtualCopyConstructor(); // copie cu new
+									vehiculCumparat->setDisponibil(0); // vehiculul cumparat devine indisponibil
+
+									// mut declararea lui t in afara 
+								
+									//Tranzactie t(clienti[indexClient - 1], vehiculCumparat, pretFinal, avans, credit);
+									Tranzactie t;
+									t.setClient(clienti[indexClient - 1]);
+									t.setVehiculCumparat(vehiculCumparat);
+									t.setPretFinal(pretFinal);
+									t.setAvans(avans);
+									t.setCredit(credit);
+
+									tranzactii.push_back(t);
+
+									clienti[indexClient - 1].setPlataRamasa(clienti[indexClient - 1].getPlataRamasa() + credit); // se adauga creditul la plata ramasa a clientului
+									clienti[indexClient - 1] = clienti[indexClient - 1] + vehiculCumparat; // atribuire vehiculului clientului in baza de date
+
+									showroomuri[indexShowroom - 1] = showroomuri[indexShowroom - 1] - (indexVehicul - 1); // stergere vehicul din showroom, in plus, operator - face si -- la nrVehiculeDisponibile
+
+									cout << "\nTranzactia a fost generata cu succes.\n";
+									cout << "ID Tranzactie: " << tranzactii.back().getIdTranzactie() << ".\n";
+									okPretFinal = 1;
+									ramaiInProgram = 0;
+								}
+								else
+									cout << "\n\nPretul final trebuie sa fie egal cu suma dintre avans si credit.\n\n";
 					}
 				}
 
@@ -3843,7 +3777,6 @@ int main()
 			k = 0;
 			break;
 		}
-
 		default:
 		{
 			cout << "\nComanda invalida.\n";
