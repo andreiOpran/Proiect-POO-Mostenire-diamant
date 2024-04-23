@@ -1,6 +1,14 @@
+/*
+
+IDE: Visual Studio
+Platform toolset: Visual Studio 2022 (v143)
+
+*/
+
 #include <cstring>
 #include <iostream>
 #include <string>
+#include <typeinfo>
 #include <vector>
 using namespace std;
 
@@ -52,7 +60,7 @@ public:
 	Vehicul& operator=(const Vehicul&);
 
 	// DESTRUCTOR
-	virtual ~Vehicul() {} // cand distrug un new VehiculDerivat() sa se distruga complet
+	virtual ~Vehicul() {} // virtual - cand distrug un new VehiculDerivat() sa se distruga complet
 
 	// OPERATORIi >> SI <<
 	friend istream& operator >>(istream&, Vehicul&);
@@ -302,7 +310,7 @@ double VehiculCarburant::costFolosireSiIntretinere() const
 		else
 			costCarburant = 0;
 	// presupunem ca se fac 20000 km/an
-	cost += (20000 / 100) * consum * costCarburant;
+	cost += (double)(20000 / 100) * consum * costCarburant;
 	return cost;
 }
 
@@ -554,7 +562,7 @@ double VehiculHibrid::costFolosireSiIntretinere() const
 		else
 			costCarburant = 0;
 	// presupunem ca se fac 20000 km/an
-	cost += (20000 / 100) * consum * costCarburant;
+	cost += (double)(20000 / 100) * consum * costCarburant;
 	cost /= 2; // este vehicul hibrid, pp ca se foloseste jumatate din timp motorul electric
 	double costElectricitateOIncarcare = 80; // 80 lei/incarcare
 
@@ -601,7 +609,7 @@ public:
 	friend ostream& operator <<(ostream&, const Client&);
 
 	// FUNCTIE CALCULARE CERDIT SCORE
-	double calculCreditScore(); // plataRamasa / creditMaxim
+	double calculCreditScore() const; // plataRamasa / creditMaxim
 
 	// SETTER NUME
 	void setNume(string);
@@ -767,7 +775,7 @@ ostream& operator <<(ostream& out, const Client& obj)
 }
 
 // FUNCTIE CALCULARE CREDIT SCORE
-double Client::calculCreditScore()
+double Client::calculCreditScore() const
 {
 	double creditScore = 0;
 	if (creditMaxim != 0)
@@ -1487,7 +1495,8 @@ int main()
 							{
 								int comandaModificare;
 								cout << "\nCe doriti sa modificati la vehiculul " << index << "?\n";
-								if (typeid(*vehicule[index - 1]) == typeid(VehiculCarburant))
+								// if (typeid(*vehicule[static_cast<std::vector<Vehicul*, std::allocator<Vehicul*>>::size_type>(index) - 1]) == typeid(VehiculCarburant)) // Visual Studio sugereaza sa schimb cu acest if()
+								if (typeid(*vehicule[index - 1]) == typeid(VehiculCarburant)) // primesc mesajul lnt-arithmetic-overflow, 
 								{
 									cout << "1. Modificare marca\n";
 									cout << "2. Modificare model\n";
@@ -1561,7 +1570,7 @@ int main()
 										string tipCarburantNou;
 										cout << "Introduceti noul tip de carburant: ";
 										cin >> tipCarburantNou;
-										VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); 
+										VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]);
 										vehiculCarburant->setTipCarburant(tipCarburantNou);
 										cout << "\nTipul de carburant a fost modificat cu succes.\n";
 										break;
@@ -1638,7 +1647,7 @@ int main()
 											double autonomieNoua;
 											cout << "Introduceti noua autonomie: ";
 											cin >> autonomieNoua;
-											VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); 
+											VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]);
 											vehiculElectric->setAutonomieKm(autonomieNoua);
 											cout << "\nAutonomia a fost modificata cu succes.\n";
 											break;
@@ -1648,7 +1657,7 @@ int main()
 											double timpIncarcareNou;
 											cout << "Introduceti noul timp de incarcare: ";
 											cin >> timpIncarcareNou;
-											VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); 
+											VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]);
 											vehiculElectric->setTimpIncarcare(timpIncarcareNou);
 											cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 											break;
@@ -1739,7 +1748,7 @@ int main()
 												string tipCarburantNou;
 												cout << "Introduceti noul tip de carburant: ";
 												cin >> tipCarburantNou;
-												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]); 
+												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehicule[index - 1]);
 												vehiculCarburant->setTipCarburant(tipCarburantNou);
 												cout << "\nTipul de carburant a fost modificat cu succes.\n";
 												break;
@@ -1749,7 +1758,7 @@ int main()
 												double autonomieNoua;
 												cout << "Introduceti noua autonomie: ";
 												cin >> autonomieNoua;
-												VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]); 
+												VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehicule[index - 1]);
 												vehiculElectric->setAutonomieKm(autonomieNoua);
 												cout << "\nAutonomia a fost modificata cu succes.\n";
 												break;
@@ -1774,7 +1783,7 @@ int main()
 													cin >> tipHibridNou;
 													if (tipHibridNou == 'M' || tipHibridNou == 'F' || tipHibridNou == 'P')
 													{
-														VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(vehicule[index - 1]); 
+														VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(vehicule[index - 1]);
 														vehiculHibrid->setTipHibrid(tipHibridNou);
 														cout << "\nTipul de hibrid a fost modificat cu succes.\n";
 														introducereCorecta = 1;
@@ -2112,7 +2121,7 @@ int main()
 														double consumNou;
 														cout << "Introduceti noul consum: ";
 														cin >> consumNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]);
 														vehiculCarburant->setConsum(consumNou);
 														cout << "\nConsumul a fost modificat cu succes.\n";
 														break;
@@ -2122,7 +2131,7 @@ int main()
 														string tipCarburantNou;
 														cout << "Introduceti noul tip de carburant: ";
 														cin >> tipCarburantNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]);
 														vehiculCarburant->setTipCarburant(tipCarburantNou);
 														cout << "\nTipul de carburant a fost modificat cu succes.\n";
 														break;
@@ -2200,7 +2209,7 @@ int main()
 															double autonomieNoua;
 															cout << "Introduceti noua autonomie: ";
 															cin >> autonomieNoua;
-															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
+															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]);
 															vehiculElectric->setAutonomieKm(autonomieNoua);
 															cout << "\nAutonomia a fost modificata cu succes.\n";
 															break;
@@ -2210,7 +2219,7 @@ int main()
 															double timpIncarcareNou;
 															cout << "Introduceti noul timp de incarcare: ";
 															cin >> timpIncarcareNou;
-															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
+															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]);
 															vehiculElectric->setTimpIncarcare(timpIncarcareNou);
 															cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 															break;
@@ -2292,7 +2301,7 @@ int main()
 																double consumNou;
 																cout << "Introduceti noul consum: ";
 																cin >> consumNou;
-																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
+																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]);
 																vehiculCarburant->setConsum(consumNou);
 																cout << "\nConsumul a fost modificat cu succes.\n";
 																break;
@@ -2302,7 +2311,7 @@ int main()
 																string tipCarburantNou;
 																cout << "Introduceti noul tip de carburant: ";
 																cin >> tipCarburantNou;
-																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
+																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]);
 																vehiculCarburant->setTipCarburant(tipCarburantNou);
 																cout << "\nTipul de carburant a fost modificat cu succes.\n";
 																break;
@@ -2322,7 +2331,7 @@ int main()
 																double timpIncarcareNou;
 																cout << "Introduceti noul timp de incarcare: ";
 																cin >> timpIncarcareNou;
-																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
+																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]);
 																vehiculElectric->setTimpIncarcare(timpIncarcareNou);
 																cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 																break;
@@ -2337,7 +2346,7 @@ int main()
 																	cin >> tipHibridNou;
 																	if (tipHibridNou == 'M' || tipHibridNou == 'F' || tipHibridNou == 'P')
 																	{
-																		VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]); 
+																		VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(clienti[index - 1].getVehiculeCumparate()[indexVehicul - 1]);
 																		vehiculHibrid->setTipHibrid(tipHibridNou);
 																		cout << "\nTipul de hibrid a fost modificat cu succes.\n";
 																		introducereCorecta = 1;
@@ -2696,7 +2705,7 @@ int main()
 														double consumNou;
 														cout << "Introduceti noul consum: ";
 														cin >> consumNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]);
 														vehiculCarburant->setConsum(consumNou);
 														cout << "\nConsumul a fost modificat cu succes.\n";
 														break;
@@ -2706,7 +2715,7 @@ int main()
 														string tipCarburantNou;
 														cout << "Introduceti noul tip de carburant: ";
 														cin >> tipCarburantNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]);
 														vehiculCarburant->setTipCarburant(tipCarburantNou);
 														cout << "\nTipul de carburant a fost modificat cu succes.\n";
 														break;
@@ -2782,7 +2791,7 @@ int main()
 															double autonomieNoua;
 															cout << "Introduceti noua autonomie: ";
 															cin >> autonomieNoua;
-															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
+															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]);
 															vehiculElectric->setAutonomieKm(autonomieNoua);
 															cout << "\nAutonomia a fost modificata cu succes.\n";
 															break;
@@ -2792,7 +2801,7 @@ int main()
 															double timpIncarcareNou;
 															cout << "Introduceti noul timp de incarcare: ";
 															cin >> timpIncarcareNou;
-															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
+															VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]);
 															vehiculElectric->setTimpIncarcare(timpIncarcareNou);
 															cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 															break;
@@ -2874,7 +2883,7 @@ int main()
 																double consumNou;
 																cout << "Introduceti noul consum: ";
 																cin >> consumNou;
-																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
+																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]);
 																vehiculCarburant->setConsum(consumNou);
 																cout << "\nConsumul a fost modificat cu succes.\n";
 																break;
@@ -2884,7 +2893,7 @@ int main()
 																string tipCarburantNou;
 																cout << "Introduceti noul tip de carburant: ";
 																cin >> tipCarburantNou;
-																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
+																VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]);
 																vehiculCarburant->setTipCarburant(tipCarburantNou);
 																cout << "\nTipul de carburant a fost modificat cu succes.\n";
 																break;
@@ -2894,7 +2903,7 @@ int main()
 																double autonomieNoua;
 																cout << "Introduceti noua autonomie: ";
 																cin >> autonomieNoua;
-																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
+																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]);
 																vehiculElectric->setAutonomieKm(autonomieNoua);
 																cout << "\nAutonomia a fost modificata cu succes.\n";
 																break;
@@ -2904,7 +2913,7 @@ int main()
 																double timpIncarcareNou;
 																cout << "Introduceti noul timp de incarcare: ";
 																cin >> timpIncarcareNou;
-																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
+																VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]);
 																vehiculElectric->setTimpIncarcare(timpIncarcareNou);
 																cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 																break;
@@ -2919,7 +2928,7 @@ int main()
 																	cin >> tipHibridNou;
 																	if (tipHibridNou == 'M' || tipHibridNou == 'F' || tipHibridNou == 'P')
 																	{
-																		VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]); 
+																		VehiculHibrid* vehiculHibrid = dynamic_cast<VehiculHibrid*>(showroomuri[index - 1].getVehiculeDisponibile()[indexVehicul - 1]);
 																		vehiculHibrid->setTipHibrid(tipHibridNou);
 																		cout << "\nTipul de hibrid a fost modificat cu succes.\n";
 																		introducereCorecta = 1;
@@ -3239,7 +3248,7 @@ int main()
 												double consumNou;
 												cout << "Introduceti noul consum: ";
 												cin >> consumNou;
-												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou); 
+												VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou);
 												vehiculCarburant->setConsum(consumNou);
 												cout << "\nConsumul a fost modificat cu succes.\n";
 												break;
@@ -3326,7 +3335,7 @@ int main()
 													double autonomieNoua;
 													cout << "Introduceti noua autonomie: ";
 													cin >> autonomieNoua;
-													VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou); 
+													VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou);
 													vehiculElectric->setAutonomieKm(autonomieNoua);
 													cout << "\nAutonomia a fost modificata cu succes.\n";
 													break;
@@ -3336,7 +3345,7 @@ int main()
 													double timpIncarcareNou;
 													cout << "Introduceti noul timp de incarcare: ";
 													cin >> timpIncarcareNou;
-													VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou); 
+													VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou);
 													vehiculElectric->setTimpIncarcare(timpIncarcareNou);
 													cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 													break;
@@ -3415,7 +3424,7 @@ int main()
 														double consumNou;
 														cout << "Introduceti noul consum: ";
 														cin >> consumNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou); 
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou);
 														vehiculCarburant->setConsum(consumNou);
 														cout << "\nConsumul a fost modificat cu succes.\n";
 														break;
@@ -3425,7 +3434,7 @@ int main()
 														string tipCarburantNou;
 														cout << "Introduceti noul tip de carburant: ";
 														cin >> tipCarburantNou;
-														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou); 
+														VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(vehiculNou);
 														vehiculCarburant->setTipCarburant(tipCarburantNou);
 														cout << "\nTipul de carburant a fost modificat cu succes.\n";
 														break;
@@ -3445,7 +3454,7 @@ int main()
 														double timpIncarcareNou;
 														cout << "Introduceti noul timp de incarcare: ";
 														cin >> timpIncarcareNou;
-														VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou); 
+														VehiculElectric* vehiculElectric = dynamic_cast<VehiculElectric*>(vehiculNou);
 														vehiculElectric->setTimpIncarcare(timpIncarcareNou);
 														cout << "\nTimpul de incarcare a fost modificat cu succes.\n";
 														break;
@@ -3742,7 +3751,7 @@ int main()
 									vehiculCumparat->setDisponibil(0); // vehiculul cumparat devine indisponibil
 
 									// mut declararea lui t in afara 
-								
+
 									//Tranzactie t(clienti[indexClient - 1], vehiculCumparat, pretFinal, avans, credit);
 									Tranzactie t;
 									t.setClient(clienti[indexClient - 1]);
