@@ -792,7 +792,7 @@ void Client::setNume(string nume) { this->nume = nume; }
 string Client::getNume() const { return nume; }
 
 // GETTER NR VEHICULE CUMPARATE
-int Client::getNrVehiculeCumparate() const { return nrVehiculeCumparate; }
+int Client::getNrVehiculeCumparate() const { /*return nrVehiculeCumparate;*/return vehiculeCumparate.size(); }
 
 // GETTER VEHICULE CUMPARATE
 vector<Vehicul*> Client::getVehiculeCumparate() const { return vehiculeCumparate; }
@@ -911,7 +911,7 @@ Showroom& Showroom::operator=(const Showroom& obj)
 
 		//deep copy
 
-		for (int i = 0; i < this->nrVehiculeDisponibile; i++) // stergere this
+		for (int i = 0; i < this->vehiculeDisponibile.size(); i++) // stergere this
 		{
 			delete this->vehiculeDisponibile[i];
 		}
@@ -1011,7 +1011,7 @@ void Showroom::setNumeShowroom(string numeShowroom) { this->numeShowroom = numeS
 void Showroom::setAdresa(string adresa) { this->adresa = adresa; }
 
 // GETTER NR VEHICULE DISPONIBILE
-int Showroom::getNrVehiculeDisponibile() const { return nrVehiculeDisponibile; }
+int Showroom::getNrVehiculeDisponibile() const { /*return nrVehiculeDisponibile;*/return vehiculeDisponibile.size(); }
 
 // GETTER NUME SHOWROOM
 string Showroom::getNumeShowroom() const { return numeShowroom; }
@@ -1218,8 +1218,8 @@ ostream& operator <<(ostream& out, const Tranzactie& obj)
 	out << "\nID Tranzactie: " << obj.idTranzactie << "\n\n";
 	out << "Numele clientului: " << obj.client.getNume() << "\n\n";
 	out << "Vehiculul cumparat:\n" << *obj.vehiculCumparat;
-	out << "Pret final: " << obj.pretFinal << endl;
-	out << "\nAvans: " << obj.avans << endl;
+	out << "\nPret final: " << obj.pretFinal << endl;
+	out << "Avans: " << obj.avans << endl;
 	out << "Credit: " << obj.credit << endl;
 	return out;
 }
@@ -3700,7 +3700,7 @@ int main()
 					cout << "Atentie! Pretul final trebuie sa fie egal cu suma dintre avans si credit.\n";
 					cout << "Atentie! Suma dintre credit si plata ramasa a clientului nu trebuie sa depaseasca creditul maxim al clientului.\n\n";
 					cout << "Pentru referinta, pretul vehiculului la care se adauga automat profitul este de " << showroomuri[indexShowroom - 1].calculPretVehiculCuProfit(showroomuri[indexShowroom - 1].getVehiculeDisponibile()[indexVehicul - 1]) << " euro.\n";
-					cout << "Pentru referinta, creditul maxim al clientului este de " << clienti[indexClient - 1].getCreditMaxim() << " euro.\n\n";
+					cout << "Pentru referinta, creditul maxim al clientului este de " << clienti[indexClient - 1].getCreditMaxim() << " euro.\n";
 					cout << "Pentru referinta, plata ramasa a clientului este de " << clienti[indexClient - 1].getPlataRamasa() << " euro.\n\n";
 					int okPretFinal = 0;
 					while (okPretFinal == 0)
