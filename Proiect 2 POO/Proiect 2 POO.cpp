@@ -3715,9 +3715,9 @@ int main()
 						cout << "\nIntroduceti creditul: ";
 						double credit;
 						cin >> credit;
-						if (credit + clienti[indexClient - 1].getPlataRamasa() > clienti[indexClient - 1].getCreditMaxim())
+						if (credit > clienti[indexClient - 1].getCreditMaxim())
 						{
-							cout << "\n\nSuma dintre credit si plata ramasa a clientului depasesc creditul maxim al clientului.";
+							cout << "\n\nCreditul depaseste creditul maxim al clientului.";
 							cout << "\n\n1. Anulare tranzactie.\n";
 							cout << "2. Reintroducere date pentru pret final, avans si credit.\n\n";
 							int comandaCredit;
@@ -3725,14 +3725,15 @@ int main()
 							cin >> comandaCredit;
 							if (comandaCredit == 1)
 							{
+								ramaiInProgram = 0;
 								cout << "\nTranzactia a fost anulata.\n";
 								break;
 							}
 						}
 						else
-							if (credit > clienti[indexClient - 1].getCreditMaxim())
+							if (credit + clienti[indexClient - 1].getPlataRamasa() > clienti[indexClient - 1].getCreditMaxim())
 							{
-								cout << "\n\nCreditul depaseste creditul maxim al clientului.";
+								cout << "\n\nSuma dintre credit si plata ramasa a clientului depasesc creditul maxim al clientului.";
 								cout << "\n\n1. Anulare tranzactie.\n";
 								cout << "2. Reintroducere date pentru pret final, avans si credit.\n\n";
 								int comandaCredit;
@@ -3740,6 +3741,7 @@ int main()
 								cin >> comandaCredit;
 								if (comandaCredit == 1)
 								{
+									ramaiInProgram = 0;
 									cout << "\nTranzactia a fost anulata.\n";
 									break;
 								}
