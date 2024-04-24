@@ -1064,6 +1064,7 @@ Showroom Showroom::operator-(int index)
 				return *this;
 			}
 	}
+	return *this;
 }
 
 
