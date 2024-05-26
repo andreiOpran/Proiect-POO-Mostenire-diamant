@@ -492,7 +492,8 @@ public:
 VehiculHibrid::VehiculHibrid() : VehiculCarburant(), VehiculElectric(), tipHibrid('0') {}
 
 // CONSTRUCTOR CU PARAMETRI
-VehiculHibrid::VehiculHibrid(string marca, string model, int anFabricatie, bool disponibil, double pret, string tipCarburant, double consum, double autonomieKm, double timpIncarcare, char tipHibrid) : Vehicul(marca, model, anFabricatie, disponibil, pret), VehiculCarburant(marca, model, anFabricatie, disponibil, pret, tipCarburant, consum), VehiculElectric(marca, model, anFabricatie, disponibil, pret, autonomieKm, timpIncarcare), tipHibrid(tipHibrid) {}
+VehiculHibrid::VehiculHibrid(string marca, string model, int anFabricatie, bool disponibil, double pret, string tipCarburant, double consum, double autonomieKm, double timpIncarcare, char tipHibrid) : 
+	Vehicul(marca, model, anFabricatie, disponibil, pret), VehiculCarburant(marca, model, anFabricatie, disponibil, pret, tipCarburant, consum), VehiculElectric(marca, model, anFabricatie, disponibil, pret, autonomieKm, timpIncarcare), tipHibrid(tipHibrid) {}
 
 //  COPY CONSTRUCTOR
 VehiculHibrid::VehiculHibrid(const VehiculHibrid& obj) : Vehicul(obj), VehiculCarburant(obj), VehiculElectric(obj), tipHibrid(obj.tipHibrid) {}
